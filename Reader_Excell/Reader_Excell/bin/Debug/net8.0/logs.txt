@@ -1,0 +1,276 @@
+2024-09-13 08:44:35 [INFO] Processing file: C:\Users\Giebert\Documents\SEPT-3-2024-SALES.xls
+2024-09-13 08:44:38 [INFO] Processing row with description: 12oz FRAPPE Blueberries & Cream
+2024-09-13 08:44:39 [INFO] Processing row with description: 12oz FRAPPE Dark Mocha Cream
+2024-09-13 08:44:39 [INFO] Processing row with description: 12oz FRAPPE Vietnamese Coconut
+2024-09-13 08:44:39 [INFO] Processing row with description: 12oz HOT Americano
+2024-09-13 08:44:39 [INFO] Processing row with description: 12oz HOT Butterscotch Latte
+2024-09-13 08:44:39 [INFO] Processing row with description: 12oz HOT Cafe Latte
+2024-09-13 08:44:39 [INFO] Processing row with description: 12oz HOT Cafe Mocha
+2024-09-13 08:44:39 [INFO] Processing row with description: 12oz HOT Cappuccino
+2024-09-13 08:44:39 [INFO] Processing row with description: 12oz HOT Caramel Macchiato
+2024-09-13 08:44:39 [INFO] Processing row with description: 12oz HOT Chai Latte
+2024-09-13 08:44:39 [ERROR] No match found for description: 12oz HOT Cappuccino
+2024-09-13 08:44:39 [INFO] Processing row with description: 12oz HOT Dirty Chai Latte
+2024-09-13 08:44:39 [ERROR] No match found for description: 12oz HOT Cafe Mocha
+2024-09-13 08:44:39 [INFO] Processing row with description: 12oz HOT Milestone Chocolate
+2024-09-13 08:44:39 [ERROR] No match found for description: 12oz FRAPPE Vietnamese Coconut
+2024-09-13 08:44:39 [INFO] Processing row with description: 12oz HOT Spanish Latte
+2024-09-13 08:44:39 [ERROR] No match found for description: 12oz FRAPPE Dark Mocha Cream
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz HOT Milestone Chocolate
+2024-09-13 08:44:40 [INFO] Found item: 12oz HOT Americano for description: 12oz HOT Americano
+2024-09-13 08:44:40 [INFO] Processing row with description: 12oz HOT Taro Coco Latte
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz HOT Caramel Macchiato
+2024-09-13 08:44:40 [INFO] Processing row with description: 12oz ICED Butterscotch Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 12oz ICED Americano
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz HOT Taro Coco Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 12oz ICED Café Latte
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz HOT Dirty Chai Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 12oz ICED Café Mocha
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz ICED Café Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 12oz ICED Caramel Macchiato
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz ICED Americano
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz ICED Butterscotch Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 12oz ICED Honeycomb Crumb Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 12oz ICED French Vanilla Latte
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz HOT Spanish Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 12oz ICED Matcha Latte
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz HOT Butterscotch Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 12oz ICED Milestone Chocolate
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz ICED Caramel Macchiato
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz HOT Chai Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 12oz ICED Spanish Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 12oz ICED Salted Caramel Latte
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz ICED French Vanilla Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 12oz ICED Taro Coco Latte
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz ICED Matcha Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 12oz ICED Viet Latte
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz ICED Café Mocha
+2024-09-13 08:44:40 [INFO] Processing row with description: 12oz ICED Viet on the Rocks
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz ICED Honeycomb Crumb Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 12oz ICED White Chocolate Mocha
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz ICED Salted Caramel Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 12oz REFRESHERS Lycheemonade
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz ICED Spanish Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 12oz REFRESHERS Mint Cucumonade
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz ICED Milestone Chocolate
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz FRAPPE Blueberries & Cream
+2024-09-13 08:44:40 [INFO] Processing row with description: 12oz REFRESHERS Passion Fruit & Pomegranate
+2024-09-13 08:44:40 [INFO] Processing row with description: 12oz REFRESHERS Raspberry Zest Freeze
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz ICED White Chocolate Mocha
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz FRAPPE Dark Mocha Cream
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz ICED Viet Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz FRAPPE Hazelnut Mocha Chip Frappe
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz ICED Taro Coco Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz FRAPPE Matcha Cream
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz REFRESHERS Lycheemonade
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz FRAPPE Salted Caramel
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz ICED Viet on the Rocks
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz FRAPPE Strawberries & Cream
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz FRAPPE Dark Mocha Cream
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz FRAPPE Vietnamese Coconut
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz REFRESHERS Passion Fruit & Pomegranate
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz ICED Americano
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz REFRESHERS Raspberry Zest Freeze
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz REFRESHERS Mint Cucumonade
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz ICED Butterscotch Latte
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz FRAPPE Matcha Cream
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz ICED Cafe Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz ICED Cappuccino
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz FRAPPE Hazelnut Mocha Chip Frappe
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz ICED Caramel Macchiato
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz FRAPPE Vietnamese Coconut
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz FRAPPE Salted Caramel
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz FRAPPE Strawberries & Cream
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz ICED Honeycomb Crumb Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz ICED French Vanilla Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz ICED Chai Latte
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz ICED Butterscotch Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz ICED Matcha Latte
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz ICED Americano
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz ICED French Vanilla Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz ICED Salted Caramel Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz ICED Milestone Chocolate
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz ICED Cappuccino
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz ICED Spanish Latte
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz ICED Cafe Latte
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz ICED Honeycomb Crumb Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz ICED Taro Coco Latte
+2024-09-13 08:44:40 [ERROR] No match found for description: 12oz HOT Cafe Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz REFRESHERS Lemon Lime Freeze
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz ICED Viet Latte
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz ICED Caramel Macchiato
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz REFRESHERS Lycheemonade
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz REFRESHERS Lemon Lime Freeze
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz REFRESHERS Mint Cucumonade
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz ICED Taro Coco Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz REFRESHERS Passion Fruit w/ Pomegranate
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz ICED Milestone Chocolate
+2024-09-13 08:44:40 [INFO] Processing row with description: 16oz REFRESHERS Strawberrymonade
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz ICED Chai Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 8oz HOT Americano
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz REFRESHERS Mint Cucumonade
+2024-09-13 08:44:40 [INFO] Processing row with description: 8oz HOT Café Latte
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz ICED Salted Caramel Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 8oz HOT Cappuccino
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz ICED Viet Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 8oz HOT Caramel Macchiato
+2024-09-13 08:44:40 [INFO] Found item: 16oz ICED Spanish Latte for description: 16oz ICED Spanish Latte
+2024-09-13 08:44:40 [ERROR] No match found for description: 8oz HOT Cappuccino
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz REFRESHERS Strawberrymonade
+2024-09-13 08:44:40 [INFO] Processing row with description: 8oz HOT French Vanilla Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 8oz HOT Matcha Latte
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz REFRESHERS Lycheemonade
+2024-09-13 08:44:40 [INFO] Processing row with description: 8oz HOT Milestone Chocolate
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz ICED Matcha Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: 8oz HOT Spanish Latte
+2024-09-13 08:44:40 [ERROR] No match found for description: 8oz HOT Matcha Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: ADD ONS BIG Non-fat Milk
+2024-09-13 08:44:40 [ERROR] No match found for description: 8oz HOT Caramel Macchiato
+2024-09-13 08:44:40 [ERROR] No match found for description: 8oz HOT Café Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: ADD ONS Cake Box
+2024-09-13 08:44:40 [ERROR] No match found for description: 8oz HOT Americano
+2024-09-13 08:44:40 [INFO] Processing row with description: ADD ONS Espresso Shot
+2024-09-13 08:44:40 [INFO] Processing row with description: ADD ONS BIG Soy Milk
+2024-09-13 08:44:40 [ERROR] No match found for description: 8oz HOT Milestone Chocolate
+2024-09-13 08:44:40 [ERROR] No match found for description: 8oz HOT French Vanilla Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: ADD ONS Honey
+2024-09-13 08:44:40 [ERROR] No match found for description: 16oz REFRESHERS Passion Fruit w/ Pomegranate
+2024-09-13 08:44:40 [INFO] Processing row with description: ADD ONS Rice
+2024-09-13 08:44:40 [INFO] Processing row with description: ADD ONS SMALL Soy Milk
+2024-09-13 08:44:40 [ERROR] No match found for description: ADD ONS Cake Box
+2024-09-13 08:44:40 [INFO] Processing row with description: ADD ONS Take-out Box
+2024-09-13 08:44:40 [ERROR] No match found for description: ADD ONS BIG Soy Milk
+2024-09-13 08:44:40 [ERROR] No match found for description: ADD ONS Espresso Shot
+2024-09-13 08:44:40 [INFO] Processing row with description: ADD ONS Take-out Tray 2-Beverages
+2024-09-13 08:44:40 [INFO] Processing row with description: ADD ONS Take-out Box
+2024-09-13 08:44:40 [INFO] Processing row with description: ADD ONS Take-out Tray 4-Beverages
+2024-09-13 08:44:40 [ERROR] No match found for description: ADD ONS Rice
+2024-09-13 08:44:40 [INFO] Processing row with description: APPETIZERS Beef Brisket Tacos
+2024-09-13 08:44:40 [ERROR] No match found for description: 8oz HOT Spanish Latte
+2024-09-13 08:44:40 [INFO] Processing row with description: APPETIZERS Cajun French Fries
+2024-09-13 08:44:40 [ERROR] No match found for description: ADD ONS Take-out Tray 4-Beverages
+2024-09-13 08:44:40 [INFO] Processing row with description: APPETIZERS Crispy Chicken Tenders
+2024-09-13 08:44:40 [ERROR] No match found for description: ADD ONS BIG Non-fat Milk
+2024-09-13 08:44:40 [INFO] Processing row with description: APPETIZERS Quesadilla Chicken
+2024-09-13 08:44:40 [ERROR] No match found for description: ADD ONS SMALL Soy Milk
+2024-09-13 08:44:40 [INFO] Processing row with description: APPETIZERS Quesadilla Chili Con Carne
+2024-09-13 08:44:40 [ERROR] No match found for description: ADD ONS Honey
+2024-09-13 08:44:40 [ERROR] No match found for description: APPETIZERS Beef Brisket Tacos
+2024-09-13 08:44:40 [INFO] Processing row with description: APPETIZERS Sweet Potato Crisps
+2024-09-13 08:44:40 [ERROR] No match found for description: ADD ONS Take-out Tray 2-Beverages
+2024-09-13 08:44:40 [INFO] Found item: ADD ONS Take-out Box for description: ADD ONS Take-out Box
+2024-09-13 08:44:40 [INFO] Found item: ADD ONS Take-out Box for description: ADD ONS Take-out Box
+2024-09-13 08:44:40 [INFO] Processing row with description: APPETIZERS Shrimp Aglio Ala Gambas
+2024-09-13 08:44:40 [INFO] Processing row with description: APPETIZERS Wings Honey Sriracha w/ Fries
+2024-09-13 08:44:40 [INFO] Processing row with description: BREAKFAST Bacon-Steak & Eggs
+2024-09-13 08:44:40 [ERROR] No match found for description: APPETIZERS Cajun French Fries
+2024-09-13 08:44:40 [ERROR] No match found for description: APPETIZERS Sweet Potato Crisps
+2024-09-13 08:44:40 [ERROR] No match found for description: APPETIZERS Quesadilla Chili Con Carne
+2024-09-13 08:44:40 [INFO] Processing row with description: BREAKFAST Chicken Longganisa
+2024-09-13 08:44:40 [INFO] Processing row with description: BREAKFAST Brioche French Toast
+2024-09-13 08:44:40 [ERROR] No match found for description: APPETIZERS Shrimp Aglio Ala Gambas
+2024-09-13 08:44:40 [INFO] Processing row with description: BREAKFAST Daing na Bangus
+2024-09-13 08:44:40 [ERROR] No match found for description: APPETIZERS Crispy Chicken Tenders
+2024-09-13 08:44:40 [INFO] Processing row with description: BREAKFAST Beef Tapa
+2024-09-13 08:44:40 [ERROR] No match found for description: BREAKFAST Bacon-Steak & Eggs
+2024-09-13 08:44:40 [INFO] Processing row with description: BREAKFAST Hungarian Sausage
+2024-09-13 08:44:40 [ERROR] No match found for description: APPETIZERS Quesadilla Chicken
+2024-09-13 08:44:40 [INFO] Processing row with description: BREAKFAST Pancake w/ Bacon & Egg
+2024-09-13 08:44:40 [ERROR] No match found for description: BREAKFAST Chicken Longganisa
+2024-09-13 08:44:40 [INFO] Processing row with description: BREAKFAST Pork Tocino
+2024-09-13 08:44:40 [ERROR] No match found for description: BREAKFAST Brioche French Toast
+2024-09-13 08:44:40 [INFO] Processing row with description: BREAKFAST Ranch Corned Beef
+2024-09-13 08:44:40 [INFO] Processing row with description: CAKES Blueberry Cheesecake
+2024-09-13 08:44:40 [ERROR] No match found for description: APPETIZERS Wings Honey Sriracha w/ Fries
+2024-09-13 08:44:40 [INFO] Processing row with description: BREAKFAST Smokey Longganisa
+2024-09-13 08:44:40 [ERROR] No match found for description: BREAKFAST Daing na Bangus
+2024-09-13 08:44:40 [INFO] Processing row with description: CAKES Choco Caramel
+2024-09-13 08:44:40 [INFO] Processing row with description: CAKES Espresso Mousse
+2024-09-13 08:44:40 [INFO] Processing row with description: CAKES Apple Crumble Cheescake
+2024-09-13 08:44:40 [ERROR] No match found for description: BREAKFAST Hungarian Sausage
+2024-09-13 08:44:40 [INFO] Processing row with description: CAKES Tiramisu Cheesecake
+2024-09-13 08:44:40 [ERROR] No match found for description: BREAKFAST Beef Tapa
+2024-09-13 08:44:40 [INFO] Processing row with description: COLD White Brew
+2024-09-13 08:44:40 [ERROR] No match found for description: CAKES Blueberry Cheesecake
+2024-09-13 08:44:40 [INFO] Processing row with description: HOT Espresso Doppio
+2024-09-13 08:44:40 [ERROR] No match found for description: CAKES Tiramisu Cheesecake
+2024-09-13 08:44:40 [ERROR] No match found for description: BREAKFAST Pork Tocino
+2024-09-13 08:44:40 [INFO] Processing row with description: MAINS American Baby Back Ribs
+2024-09-13 08:44:40 [INFO] Processing row with description: MAINS Beef Salpicao
+2024-09-13 08:44:40 [ERROR] No match found for description: BREAKFAST Pancake w/ Bacon & Egg
+2024-09-13 08:44:40 [ERROR] No match found for description: CAKES Apple Crumble Cheescake
+2024-09-13 08:44:40 [INFO] Processing row with description: MAINS Garlic Butter Salmon
+2024-09-13 08:44:40 [ERROR] No match found for description: BREAKFAST Ranch Corned Beef
+2024-09-13 08:44:40 [ERROR] No match found for description: CAKES Espresso Mousse
+2024-09-13 08:44:40 [INFO] Processing row with description: MAINS Grilled Tangingue w/ Mango Corn Salsa
+2024-09-13 08:44:40 [INFO] Processing row with description: MAINS Roastbeef w/ Mushroom Sauce
+2024-09-13 08:44:40 [ERROR] No match found for description: CAKES Choco Caramel
+2024-09-13 08:44:40 [INFO] Processing row with description: PASTAS Creamy Bacon Carbonara
+2024-09-13 08:44:40 [INFO] Processing row with description: PASTAS Grilled Chicken Carbonara
+2024-09-13 08:44:40 [ERROR] No match found for description: MAINS American Baby Back Ribs
+2024-09-13 08:44:40 [ERROR] No match found for description: PASTAS Creamy Bacon Carbonara
+2024-09-13 08:44:40 [ERROR] No match found for description: MAINS Garlic Butter Salmon
+2024-09-13 08:44:40 [INFO] Processing row with description: PASTAS Meaty Lasagna
+2024-09-13 08:44:40 [INFO] Processing row with description: PASTAS Shrimp Trapanese Cream Sauce
+2024-09-13 08:44:40 [INFO] Processing row with description: PASTAS Shrimp Aglio Olio
+2024-09-13 08:44:40 [ERROR] No match found for description: MAINS Grilled Tangingue w/ Mango Corn Salsa
+2024-09-13 08:44:40 [ERROR] No match found for description: BREAKFAST Smokey Longganisa
+2024-09-13 08:44:40 [INFO] Processing row with description: PASTAS Spaghetti Bolognese
+2024-09-13 08:44:40 [ERROR] No match found for description: PASTAS Grilled Chicken Carbonara
+2024-09-13 08:44:40 [INFO] Processing row with description: PASTAS Spanish Sardines
+2024-09-13 08:44:40 [ERROR] No match found for description: PASTAS Shrimp Trapanese Cream Sauce
+2024-09-13 08:44:40 [INFO] Processing row with description: PASTRIES Banana Cream Bread
+2024-09-13 08:44:40 [ERROR] No match found for description: COLD White Brew
+2024-09-13 08:44:40 [INFO] Found item: PASTAS Shrimp Aglio Olio for description: PASTAS Shrimp Aglio Olio
+2024-09-13 08:44:40 [ERROR] No match found for description: MAINS Beef Salpicao
+2024-09-13 08:44:40 [ERROR] No match found for description: PASTRIES Banana Cream Bread
+2024-09-13 08:44:40 [ERROR] No match found for description: PASTAS Spanish Sardines
+2024-09-13 08:44:40 [ERROR] No match found for description: PASTAS Spaghetti Bolognese
+2024-09-13 08:44:40 [INFO] Processing row with description: PASTRIES Korean Garlic Bun
+2024-09-13 08:44:40 [INFO] Processing row with description: PASTRIES Pain Au Chocolat
+2024-09-13 08:44:40 [INFO] Found item: PASTRIES Korean Garlic Bun for description: PASTRIES Korean Garlic Bun
+2024-09-13 08:44:40 [INFO] Found item: PASTRIES Pain Au Chocolat for description: PASTRIES Pain Au Chocolat
+2024-09-13 08:44:40 [ERROR] No match found for description: HOT Espresso Doppio
+2024-09-13 08:44:40 [INFO] Processing row with description: PASTRIES Pastelmada
+2024-09-13 08:44:40 [ERROR] No match found for description: MAINS Roastbeef w/ Mushroom Sauce
+2024-09-13 08:44:40 [INFO] Found item: PASTRIES Pastelmada for description: PASTRIES Pastelmada
+2024-09-13 08:44:40 [INFO] Processing row with description: PASTRIES Strawberry Danish
+2024-09-13 08:44:40 [INFO] Processing row with description: PASTRIES Twisted Cinnamon
+2024-09-13 08:44:40 [INFO] Processing row with description: PASTRIES Coffee Bun
+2024-09-13 08:44:40 [INFO] Processing row with description: PASTRIES Chunky Chocolate Chip Cookie
+2024-09-13 08:44:40 [ERROR] No match found for description: PASTRIES Coffee Bun
+2024-09-13 08:44:40 [ERROR] No match found for description: PASTRIES Twisted Cinnamon
+2024-09-13 08:44:40 [INFO] Processing row with description: RTD Sola Lemon
+2024-09-13 08:44:40 [ERROR] No match found for description: PASTRIES Strawberry Danish
+2024-09-13 08:44:40 [INFO] Processing row with description: RTD Summit Bottled Water 350ml
+2024-09-13 08:44:40 [INFO] Processing row with description: SALAD Grilled Chicken Ceasar
+2024-09-13 08:44:40 [INFO] Processing row with description: SALAD Garden
+2024-09-13 08:44:40 [ERROR] No match found for description: PASTRIES Chunky Chocolate Chip Cookie
+2024-09-13 08:44:40 [INFO] Processing row with description: SANDWICHES Bacon & Egg Breakfast Croissant
+2024-09-13 08:44:40 [ERROR] No match found for description: SALAD Garden
+2024-09-13 08:44:40 [INFO] Processing row with description: SANDWICHES Chicken Ham Panini w/ Fries
+2024-09-13 08:44:40 [ERROR] No match found for description: RTD Sola Lemon
+2024-09-13 08:44:40 [INFO] Processing row with description: SANDWICHES Country Style Ham Panini w/ Fries
+2024-09-13 08:44:40 [ERROR] No match found for description: SANDWICHES Bacon & Egg Breakfast Croissant
+2024-09-13 08:44:40 [ERROR] No match found for description: SALAD Grilled Chicken Ceasar
+2024-09-13 08:44:40 [INFO] Processing row with description: SANDWICHES Roast Beef Melt
+2024-09-13 08:44:40 [INFO] Processing row with description: SANDWICHES Milestone Clubhouse
+2024-09-13 08:44:40 [ERROR] No match found for description: SANDWICHES Chicken Ham Panini w/ Fries
+2024-09-13 08:44:40 [INFO] Processing row with description: SANDWICHES Turkey Monte Cristo Brioche
+2024-09-13 08:44:40 [INFO] Processing row with description: TEA Hot Peppermint
+2024-09-13 08:44:40 [INFO] Processing row with description: TEA HOT Sleep
+2024-09-13 08:44:40 [ERROR] No match found for description: SANDWICHES Roast Beef Melt
+2024-09-13 08:44:40 [INFO] Processing row with description: TEA HOT TWG Geisha Blossom
+2024-09-13 08:44:40 [ERROR] No match found for description: SANDWICHES Country Style Ham Panini w/ Fries
+2024-09-13 08:44:40 [ERROR] No match found for description: SANDWICHES Milestone Clubhouse
+2024-09-13 08:44:40 [ERROR] No match found for description: TEA HOT Sleep
+2024-09-13 08:44:40 [ERROR] No match found for description: SANDWICHES Turkey Monte Cristo Brioche
+2024-09-13 08:44:40 [INFO] Processing row with description: PASTRIES Biscoff Cream Tart
+2024-09-13 08:44:40 [ERROR] No match found for description: TEA Hot Peppermint
+2024-09-13 08:44:40 [ERROR] No match found for description: TEA HOT TWG Geisha Blossom
+2024-09-13 08:44:40 [INFO] Processing row with description: PASTRIES French Butter Croissant
+2024-09-13 08:44:40 [ERROR] No match found for description: PASTAS Meaty Lasagna
+2024-09-13 08:44:40 [INFO] Found item: RTD Summit Bottled Water 350ml for description: RTD Summit Bottled Water 350ml
+2024-09-13 08:44:40 [ERROR] No match found for description: PASTRIES Biscoff Cream Tart
+2024-09-13 08:44:40 [INFO] Found item: PASTRIES French Butter Croissan for description: PASTRIES French Butter Croissant
+2024-09-13 08:44:41 [INFO] File processing completed: C:\Users\Giebert\Documents\SEPT-3-2024-SALES.xls

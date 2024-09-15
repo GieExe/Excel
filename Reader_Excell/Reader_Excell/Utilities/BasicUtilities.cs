@@ -1,35 +1,58 @@
-﻿//BasicUtilities.cs
-using NPOI.SS.UserModel;
+﻿using NPOI.SS.UserModel;
 using OfficeOpenXml;
-
+using Reader_Excell.Properties;
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Reader_Excell.Utilities
 {
     internal class BasicUtilities
     {
-
-        public static async Task OnFileCreatedAsync(string filePath)
+        public static async Task OnFileCreatedAsync(string filePath, CancellationToken cancellationToken)
         {
             if (IsExcelFile(filePath))
             {
                 Console.WriteLine($"Excel file detected: {Path.GetFileName(filePath)}");
-                await FileFunctions.ProcessExcelFileAsync(filePath);
+
+                // Get the log directory path from Settings
+                string logDirectoryPath = Settings.Default.Path;
+
+                // Pass the logDirectoryPath along with filePath and cancellationToken
+                await FileFunctions.ProcessExcelFileAsync(filePath, logDirectoryPath, cancellationToken);
             }
         }
 
-
-        public static async Task OnFileRenamedAsync(string filePath)
+        public static async Task OnFileRenamedAsync(string filePath, CancellationToken cancellationToken)
         {
             if (IsExcelFile(filePath))
             {
                 Console.WriteLine($"Excel file renamed or moved: {Path.GetFileName(filePath)}");
-                await FileFunctions.ProcessExcelFileAsync(filePath);
+
+                // Get the log directory path from Settings
+                string logDirectoryPath = Settings.Default.Path;
+
+                // Pass the logDirectoryPath along with filePath and cancellationToken
+                await FileFunctions.ProcessExcelFileAsync(filePath, logDirectoryPath, cancellationToken);
             }
         }
 
         public static void OnError(object sender, ErrorEventArgs e)
         {
             Console.WriteLine($"Error: {e.GetException().Message}");
+        }
+
+        public static int FindColumnIndex(IRow headerRow, string columnName)
+        {
+            for (int col = 0; col < headerRow.LastCellNum; col++)
+            {
+                if (headerRow.GetCell(col)?.ToString().Trim().Equals(columnName, StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    return col;
+                }
+            }
+            return -1;
         }
 
         public static int FindColumnIndex(ExcelWorksheet worksheet, int totalColumns, string columnName)
@@ -44,17 +67,6 @@ namespace Reader_Excell.Utilities
             return -1;
         }
 
-        public static int FindColumnIndex(IRow headerRow, string columnName)
-        {
-            for (int col = 0; col < headerRow.LastCellNum; col++)
-            {
-                if (headerRow.GetCell(col)?.ToString().Trim().Equals(columnName, StringComparison.OrdinalIgnoreCase) == true)
-                {
-                    return col;
-                }
-            }
-            return -1;
-        }
         public static bool IsExcelFile(string filePath)
         {
             string extension = Path.GetExtension(filePath).ToLower();
@@ -94,5 +106,6 @@ namespace Reader_Excell.Utilities
                 Console.WriteLine($"Error deleting file '{Path.GetFileName(filePath)}': {ex.Message}");
             }
         }
+
     }
 }

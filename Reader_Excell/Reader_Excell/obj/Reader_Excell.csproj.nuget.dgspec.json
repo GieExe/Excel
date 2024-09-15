@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Giebert\\source\\repos\\Reader_Excell\\Reader_Excell\\Reader_Excell.csproj": {}
+    "C:\\Users\\Giebert\\source\\repos\\Excel\\Reader_Excell\\Reader_Excell\\Reader_Excell.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Giebert\\source\\repos\\Reader_Excell\\Reader_Excell\\Reader_Excell.csproj": {
+    "C:\\Users\\Giebert\\source\\repos\\Excel\\Reader_Excell\\Reader_Excell\\Reader_Excell.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Giebert\\source\\repos\\Reader_Excell\\Reader_Excell\\Reader_Excell.csproj",
+        "projectUniqueName": "C:\\Users\\Giebert\\source\\repos\\Excel\\Reader_Excell\\Reader_Excell\\Reader_Excell.csproj",
         "projectName": "Reader_Excell",
-        "projectPath": "C:\\Users\\Giebert\\source\\repos\\Reader_Excell\\Reader_Excell\\Reader_Excell.csproj",
+        "projectPath": "C:\\Users\\Giebert\\source\\repos\\Excel\\Reader_Excell\\Reader_Excell\\Reader_Excell.csproj",
         "packagesPath": "C:\\Users\\Giebert\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Giebert\\source\\repos\\Reader_Excell\\Reader_Excell\\obj\\",
+        "outputPath": "C:\\Users\\Giebert\\source\\repos\\Excel\\Reader_Excell\\Reader_Excell\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Giebert\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -46,6 +46,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "EPPlus": {
+              "target": "Package",
+              "version": "[7.3.1, )"
+            },
             "Microsoft.Extensions.Configuration": {
               "target": "Package",
               "version": "[8.0.0, )"
@@ -69,6 +73,14 @@
             "MySql.Data": {
               "target": "Package",
               "version": "[9.0.0, )"
+            },
+            "NLog": {
+              "target": "Package",
+              "version": "[5.3.4, )"
+            },
+            "NLog.Config": {
+              "target": "Package",
+              "version": "[4.7.15, )"
             },
             "NPOI": {
               "target": "Package",

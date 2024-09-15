@@ -1,0 +1,13 @@
+2024-09-13 09:51:16.5427 INFO Excel file detected: SEPT-3-2024-SALES.xls 
+2024-09-13 09:51:16.8868 INFO Starting to process file: C:\Users\Giebert\Documents\SEPT-3-2024-SALES.xls 
+2024-09-13 09:51:17.8960 INFO Detected file extension: .xls 
+2024-09-13 09:51:19.4052 INFO Processing row with description: 12oz FRAPPE Blueberries & Cream 
+2024-09-13 09:51:19.7507 INFO Processing row with description: 12oz FRAPPE Dark Mocha Cream 
+2024-09-13 09:51:19.7507 INFO Processing row with description: 12oz FRAPPE Vietnamese Coconut 
+2024-09-13 09:51:19.7626 INFO Processing row with description: 12oz HOT Americano 
+2024-09-13 09:51:19.7626 INFO Processing row with description: 12oz HOT Butterscotch Latte 
+2024-09-13 09:51:19.7734 INFO Processing row with description: 12oz HOT Cafe Latte 
+2024-09-13 09:51:19.7734 INFO Processing row with description: 12oz HOT Cafe Mocha 
+2024-09-13 09:51:19.7876 INFO Processing row with description: 12oz HOT Cappuccino 
+2024-09-13 09:51:19.7876 INFO Processing row with description: 12oz HOT Caramel Macchiato 
+2024-09-13 09:51:19.7876 INFO Processing row with description: 12oz HOT Chai Latte 

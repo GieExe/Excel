@@ -1,44 +1,110 @@
-﻿//Program.cs
-using OfficeOpenXml;
+﻿using OfficeOpenXml;
 using Reader_Excell.Utilities;
+using Reader_Excell.Properties;
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Reader_Excel
 {
     internal class Program
     {
-        // Semaphore for managing concurrency
-        private static SemaphoreSlim semaphore = new SemaphoreSlim(10);
-
-        // Counter to track the number of 'true' results
-        private static int trueCount = 0;
+        private static readonly CancellationTokenSource cts = new CancellationTokenSource();
 
         static async Task Main(string[] args)
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
-            string folderPath = @"C:\Users\Giebert\Documents\";
-
-            if (!Directory.Exists(folderPath))
+            // Handle application exit
+            AppDomain.CurrentDomain.ProcessExit += (s, e) => cts.Cancel();
+            Console.CancelKeyPress += (s, e) =>
             {
-                Console.WriteLine("The folder does not exist.");
-                return;
-            }
-
-            FileSystemWatcher watcher = new FileSystemWatcher
-            {
-                Path = folderPath,
-                Filter = "*.*",
-                NotifyFilter = NotifyFilters.FileName | NotifyFilters.CreationTime
+                e.Cancel = true; // Prevent immediate exit
+                cts.Cancel();
             };
 
-            watcher.Created += async (sender, e) => await BasicUtilities.OnFileCreatedAsync(e.FullPath);
-            watcher.Renamed += async (sender, e) => await BasicUtilities.OnFileRenamedAsync(e.FullPath);
-            watcher.Error += BasicUtilities.OnError;
+            while (true)
+            {
+                Console.WriteLine("Choose an option:");
+                Console.WriteLine("1. Start processing Excel files");
+                Console.WriteLine("2. Update directory path");
+                string choice = Console.ReadLine();
 
-            watcher.EnableRaisingEvents = true;
+                if (choice == "1")
+                {
+                    // Retrieve the directory path from Settings.settings
+                    string folderPath = Settings.Default.Path;
 
-            Console.WriteLine($"Monitoring folder: {folderPath} for Excel files (.xlsx, .xls)...");
-            await Task.Delay(-1);
+                    if (string.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))
+                    {
+                        Console.WriteLine("The directory path is not set or does not exist. Please update the directory path first.");
+                        continue;
+                    }
+
+                    Console.WriteLine($"Monitoring folder: {folderPath} for Excel files (.xlsx, .xls)...");
+
+                    FileSystemWatcher watcher = new FileSystemWatcher
+                    {
+                        Path = folderPath,
+                        Filter = "*.*", // Watch all files
+                        NotifyFilter = NotifyFilters.FileName | NotifyFilters.CreationTime
+                    };
+
+                    watcher.Created += async (sender, e) =>
+                    {
+                        if (!cts.Token.IsCancellationRequested)
+                        {
+                            await BasicUtilities.OnFileCreatedAsync(e.FullPath, cts.Token);
+                        }
+                    };
+                    watcher.Renamed += async (sender, e) =>
+                    {
+                        if (!cts.Token.IsCancellationRequested)
+                        {
+                            await BasicUtilities.OnFileRenamedAsync(e.FullPath, cts.Token);
+                        }
+                    };
+                    watcher.Error += BasicUtilities.OnError;
+
+                    watcher.EnableRaisingEvents = true;
+
+                    try
+                    {
+                        await Task.Delay(Timeout.Infinite, cts.Token); // Wait indefinitely until cancellation is requested
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        Console.WriteLine("Monitoring stopped.");
+                    }
+                    finally
+                    {
+                        watcher.Dispose(); // Clean up FileSystemWatcher
+                    }
+                }
+                else if (choice == "2")
+                {
+                    Console.WriteLine("Enter the new directory path:");
+                    string newFolderPath = Console.ReadLine();
+
+                    if (Directory.Exists(newFolderPath))
+                    {
+                        // Update the settings with the new path
+                        Settings.Default.Path = newFolderPath;
+                        Settings.Default.Save();
+
+                        Console.WriteLine($"Directory path updated to: {newFolderPath}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("The directory does not exist. Please enter a valid directory path.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid choice. Please select either 1 or 2.");
+                }
+            }
         }
     }
 }
