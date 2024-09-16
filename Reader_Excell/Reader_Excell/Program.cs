@@ -2,10 +2,7 @@
 using OfficeOpenXml;
 using Reader_Excell.Utilities;
 using Reader_Excell.Properties;
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+
 
 namespace Reader_Excel
 {
@@ -25,16 +22,8 @@ namespace Reader_Excel
                 cts.Cancel();
             };
 
-            // Show example directory paths and prompt user to enter a directory path
-            Console.WriteLine("The directory does not exist. Please enter a directory path.");
-            Console.WriteLine("Example of valid directory paths:");
-            Console.WriteLine("C:\\Users\\<YourUsername>\\Documents\\ExcelFiles");
-            Console.WriteLine("D:\\Data\\ExcelProcessing");
-            Console.WriteLine();
+            String userDirectoryPath = Settings.Default.Path;
 
-            // Prompt user to enter the directory path
-            Console.WriteLine("Please enter the directory path to monitor for Excel files:");
-            string userDirectoryPath = Console.ReadLine();
 
             // Validate and set the directory path
             if (Directory.Exists(userDirectoryPath))
@@ -49,6 +38,8 @@ namespace Reader_Excel
                 Console.WriteLine("Example of valid directory paths:");
                 Console.WriteLine("C:\\Users\\<YourUsername>\\Documents\\ExcelFiles");
                 Console.WriteLine("D:\\Data\\ExcelProcessing");
+                Console.WriteLine("Please enter the directory path to monitor for Excel files:");
+                userDirectoryPath = Console.ReadLine();
             }
 
             while (true)
@@ -99,18 +90,25 @@ namespace Reader_Excel
 
                     watcher.EnableRaisingEvents = true;
 
-                    try
+                    Console.WriteLine("Type 'exit' to stop monitoring and return to the menu.");
+
+                    while (true)
                     {
-                        await Task.Delay(Timeout.Infinite, cts.Token); // Wait indefinitely until cancellation is requested
+                        if (Console.KeyAvailable)
+                        {
+                            string input = Console.ReadLine();
+                            if (input.Equals("exit", StringComparison.OrdinalIgnoreCase))
+                            {
+                                cts.Cancel(); // Stop monitoring
+                                Console.WriteLine("Monitoring stopped.");
+                                break;
+                            }
+                        }
+
+                        await Task.Delay(500); // Polling delay to reduce CPU usage
                     }
-                    catch (OperationCanceledException)
-                    {
-                        Console.WriteLine("Monitoring stopped.");
-                    }
-                    finally
-                    {
-                        watcher.Dispose(); // Clean up FileSystemWatcher
-                    }
+
+                    watcher.Dispose(); // Clean up FileSystemWatcher
                 }
                 else if (choice == "2")
                 {
