@@ -1,4 +1,5 @@
-﻿using NPOI.SS.UserModel;
+﻿//BasicUtilities.cs
+using NPOI.SS.UserModel;
 using OfficeOpenXml;
 using Reader_Excell.Properties;
 using System;

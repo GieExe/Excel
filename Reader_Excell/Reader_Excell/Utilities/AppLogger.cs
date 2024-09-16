@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿//AppLogger.cs
+using NLog;
 using NLog.Config;
 using NLog.Targets;
 using System.IO;
