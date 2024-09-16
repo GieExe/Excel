@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Reader_Excell")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1928162cb9700069213dee87691a1068581bfde6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+13a8c8575c4dab15219f16b23779f9d35e88b9d3")]
 [assembly: System.Reflection.AssemblyProductAttribute("Reader_Excell")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Reader_Excell")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

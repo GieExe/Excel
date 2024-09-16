@@ -24,6 +24,32 @@ namespace Reader_Excel
                 cts.Cancel();
             };
 
+            // Show example directory paths and prompt user to enter a directory path
+            Console.WriteLine("The directory does not exist. Please enter a directory path.");
+            Console.WriteLine("Example of valid directory paths:");
+            Console.WriteLine("C:\\Users\\<YourUsername>\\Documents\\ExcelFiles");
+            Console.WriteLine("D:\\Data\\ExcelProcessing");
+            Console.WriteLine();
+
+            // Prompt user to enter the directory path
+            Console.WriteLine("Please enter the directory path to monitor for Excel files:");
+            string userDirectoryPath = Console.ReadLine();
+
+            // Validate and set the directory path
+            if (Directory.Exists(userDirectoryPath))
+            {
+                Settings.Default.Path = userDirectoryPath;
+                Settings.Default.Save();
+                Console.WriteLine($"Directory path set to: {userDirectoryPath}");
+            }
+            else
+            {
+                Console.WriteLine("The directory does not exist. Please enter a valid directory path.");
+                Console.WriteLine("Example of valid directory paths:");
+                Console.WriteLine("C:\\Users\\<YourUsername>\\Documents\\ExcelFiles");
+                Console.WriteLine("D:\\Data\\ExcelProcessing");
+            }
+
             while (true)
             {
                 Console.WriteLine("Choose an option:");
@@ -39,6 +65,9 @@ namespace Reader_Excel
                     if (string.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))
                     {
                         Console.WriteLine("The directory path is not set or does not exist. Please update the directory path first.");
+                        Console.WriteLine("Example of valid directory paths:");
+                        Console.WriteLine("C:\\Users\\<YourUsername>\\Documents\\ExcelFiles");
+                        Console.WriteLine("D:\\Data\\ExcelProcessing");
                         continue;
                     }
 
@@ -98,6 +127,9 @@ namespace Reader_Excel
                     else
                     {
                         Console.WriteLine("The directory does not exist. Please enter a valid directory path.");
+                        Console.WriteLine("Example of valid directory paths:");
+                        Console.WriteLine("C:\\Users\\<YourUsername>\\Documents\\ExcelFiles");
+                        Console.WriteLine("D:\\Data\\ExcelProcessing");
                     }
                 }
                 else

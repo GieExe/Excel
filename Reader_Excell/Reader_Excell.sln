@@ -5,6 +5,8 @@ VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reader_Excell", "Reader_Excell\Reader_Excell.csproj", "{747F8D66-6635-4B04-9EC9-397651A7DBFB}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Excel_Reader_SetUp", "Excel_Reader_SetUp\Excel_Reader_SetUp.vdproj", "{B3D1C462-79C3-4001-8C32-8FE73D11E162}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,11 +17,25 @@ Global
 		{747F8D66-6635-4B04-9EC9-397651A7DBFB}.Debug|Any CPU.Build.0 = Release|Any CPU
 		{747F8D66-6635-4B04-9EC9-397651A7DBFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{747F8D66-6635-4B04-9EC9-397651A7DBFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3D1C462-79C3-4001-8C32-8FE73D11E162}.Debug|Any CPU.ActiveCfg = Debug
+		{B3D1C462-79C3-4001-8C32-8FE73D11E162}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9DB0EB7D-BF27-415C-AAC3-705A6DCEA80B}
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Default = Debug|Default
+		Release|Any CPU = Release|Any CPU
+		Release|Default = Release|Default
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Default = Debug|Default
+		Release|Any CPU = Release|Any CPU
+		Release|Default = Release|Default
 	EndGlobalSection
 EndGlobal
