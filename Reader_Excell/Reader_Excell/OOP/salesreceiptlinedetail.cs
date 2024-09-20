@@ -1,5 +1,5 @@
 ﻿// SalesReceiptLineDetail.cs
-namespace Reader_Excel
+namespace Reader_Excel.OOP
 {
     public class SalesReceiptLineDetail
     {

@@ -10,7 +10,11 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient; // Ensure this namespace is included
+using MySql.Data.MySqlClient;
+using System.Data;
+using Reader_Excel.Class;
+using Reader_Excell.OOP;
+using Reader_Excel.OOP; // Ensure this namespace is included
 
 namespace Reader_Excell.Utilities
 {
@@ -20,9 +24,10 @@ namespace Reader_Excell.Utilities
         private static int trueCount = 0; // Track the number of successful records
 
         // Global fields
-        private static List<string> txnLineIDs = new List<string>();
-        private static string? txnID = null;
-        private static string? newtxnID = null;
+        public static List<string> txnLineIDs = new List<string>();
+        public static string? txnID = null;
+        public static string? newtxnID = null;
+        public static int re_id;
 
         public static async Task ProcessExcelFileAsync(string filePath, string logDirectoryPath, CancellationToken cancellationToken)
         {
@@ -79,250 +84,11 @@ namespace Reader_Excell.Utilities
                 AppLogger.LogError(errorMessage);  // Corrected from LogInfo to LogError
 
                 // Perform cleanup in case of failure
-                await CleanupFailedTransactionAsync(txnLineIDs, newtxnID);
+                
             }
         }
 
-        private static async Task ProcessRowAsync(string description, string? qtyText, string? totalAmountText, string? refNo)
-        {
-            await semaphore.WaitAsync();
-            MySqlTransaction? transaction = null;
-
-            // Retry logic
-            const int maxRetries = 3;
-            int retryCount = 0;
-            bool success = false;
-
-            while (retryCount < maxRetries && !success)
-            {
-                try
-                {
-                    using (var connection = new MySqlConnection(ConnectionClass.GetConnectionString()))
-                    {
-                        await connection.OpenAsync();
-                        transaction = await connection.BeginTransactionAsync();
-
-                        // Normalize RefNo to handle cases where the value might be inconsistent
-                        string normalizedRefNo = (refNo ?? string.Empty).Trim().ToUpper();
-
-                        AppLogger.LogInfo($"Processing row with description: {description}");
-
-                        var item = await ItemInventory_Class.GetItemDetailsFromDatabaseAsync(description);
-
-                        if (item != null)
-                        {
-                            AppLogger.LogInfo($"Item found for description '{description}': {item.FullName}");
-
-                            Interlocked.Increment(ref trueCount);
-                            Console.WriteLine(
-                                $"true\t{item.ListID,-10}\t{item.Name,-30}\t{item.FullName,-50}\t{item.SalesDesc,-70}"
-                            );
-
-                            string txnIDGenerated = BasicUtilities.GenerateTxnID();
-                            string txnLineID = BasicUtilities.GenerateTxnLineID();
-                            txnLineIDs.Add(txnLineID); // Track the generated TxnLineID
-                            txnID = txnIDGenerated; // Track generated TxnID
-                            DateTime txnDate = DateTime.Now;
-
-                            if (!int.TryParse(qtyText ?? "0", out int quantity))
-                            {
-                                string errorMessage = $"Invalid quantity '{qtyText}' for description '{description}'.";
-                                Console.WriteLine(errorMessage);
-                                AppLogger.LogError(errorMessage);
-                                await transaction.RollbackAsync(); // Rollback transaction
-                                return;
-                            }
-
-                            decimal totalAmount;
-                            if (!decimal.TryParse(totalAmountText ?? "0", NumberStyles.Number, CultureInfo.InvariantCulture, out totalAmount))
-                            {
-                                string errorMessage = $"Invalid total amount '{totalAmountText}' for description '{description}'.";
-
-                                // Attempt to clean the total amount value
-                                string cleanedAmount = new string((totalAmountText ?? string.Empty).Where(ch => char.IsDigit(ch) || ch == '.').ToArray());
-                                if (decimal.TryParse(cleanedAmount, NumberStyles.Number, CultureInfo.InvariantCulture, out totalAmount))
-                                {
-                                    Console.WriteLine($"Total amount '{totalAmountText}' cleaned to '{totalAmount}' for description '{description}'.");
-                                }
-                                else
-                                {
-                                    errorMessage = $"Failed to parse cleaned total amount '{cleanedAmount}' for description '{description}'.";
-                                    Console.WriteLine(errorMessage);
-                                    AppLogger.LogError(errorMessage);
-                                    await transaction.RollbackAsync(); // Rollback transaction
-                                    return;
-                                }
-                            }
-
-                            decimal rate = quantity > 0 ? totalAmount / quantity : 0;
-                            rate = Math.Round(rate, 6);
-
-                            string txnIDForRefNumber = null;
-
-                            // Check if RefNumber already exists
-                            string checkRefNumberQuery = "SELECT TxnID FROM salesreceipt WHERE RefNumber = @RefNumber";
-                            using (var checkCmd = new MySqlCommand(checkRefNumberQuery, connection, transaction))
-                            {
-                                checkCmd.Parameters.AddWithValue("@RefNumber", normalizedRefNo);
-                                using (var reader = await checkCmd.ExecuteReaderAsync())
-                                {
-                                    if (await reader.ReadAsync())
-                                    {
-                                        txnIDForRefNumber = reader.GetString(0);
-                                    }
-                                }
-                            }
-
-                            if (txnIDForRefNumber == null)
-                            {
-                                txnIDForRefNumber = txnID;
-                                txnID = txnIDForRefNumber; // Track inserted TxnID
-
-                                // Insert into salesreceipt
-                                AppLogger.LogInfo($"Inserting into salesreceipt: TxnID={txnIDForRefNumber}, TxnDate={txnDate}, RefNumber={normalizedRefNo}, Subtotal={totalAmount}, TotalAmount={totalAmount}, Status=ADD");
-
-                                string insertSalesReceiptQuery = @"
-INSERT INTO salesreceipt (TxnID, TxnDate, RefNumber, Subtotal, TotalAmount, Status)
-VALUES (@TxnID, @TxnDate, @RefNumber, @Subtotal, @TotalAmount, @Status)";
-
-                                using (var command = new MySqlCommand(insertSalesReceiptQuery, connection, transaction))
-                                {
-                                    command.Parameters.AddWithValue("@TxnID", txnIDForRefNumber);
-                                    command.Parameters.AddWithValue("@TxnDate", txnDate);
-                                    command.Parameters.AddWithValue("@RefNumber", normalizedRefNo);
-                                    command.Parameters.AddWithValue("@Subtotal", totalAmount);
-                                    command.Parameters.AddWithValue("@TotalAmount", totalAmount);
-                                    command.Parameters.AddWithValue("@Status", "ADD");   
-                                    newtxnID = txnIDForRefNumber;
-                                    await command.ExecuteNonQueryAsync();
-                                    AppLogger.LogInfo($"Inserted into salesreceipt with TxnID={txnIDForRefNumber}");
-                                }
-
-                                
-                            }
-
-                            // Insert into salesreceiptlinedetail
-                            AppLogger.LogInfo($"Inserting into salesreceiptlinedetail: TxnLineID={txnLineID}, ItemRef_ListID={item.AssetAccountRef_ListID}, ItemRef_FullName={item.FullName}, Description={description}, Quantity={quantity}, Rate={rate}, Amount={totalAmount}, IDKEY={txnIDForRefNumber ?? txnID}");
-
-                            string insertSalesReceiptLineDetailQuery = @"
-INSERT INTO salesreceiptlinedetail (TxnLineID, ItemRef_ListID, ItemRef_FullName, Description, Quantity, Rate, Amount, IDKEY)
-VALUES (@TxnLineID, @ItemRef_ListID, @ItemRef_FullName, @Description, @Quantity, @Rate, @Amount, @IDKEY)";
-
-                            using (var lineDetailCommand = new MySqlCommand(insertSalesReceiptLineDetailQuery, connection, transaction))
-                            {
-                                lineDetailCommand.Parameters.AddWithValue("@TxnLineID", txnLineID);
-                                lineDetailCommand.Parameters.AddWithValue("@ItemRef_ListID", item.AssetAccountRef_ListID);
-                                lineDetailCommand.Parameters.AddWithValue("@ItemRef_FullName", item.FullName);
-                                lineDetailCommand.Parameters.AddWithValue("@Description", description);
-                                lineDetailCommand.Parameters.AddWithValue("@Quantity", quantity);
-                                lineDetailCommand.Parameters.AddWithValue("@Rate", rate);
-                                lineDetailCommand.Parameters.AddWithValue("@Amount", totalAmount);
-                                lineDetailCommand.Parameters.AddWithValue("@IDKEY", txnIDForRefNumber ?? txnID);
-
-                                await lineDetailCommand.ExecuteNonQueryAsync();
-                                AppLogger.LogInfo($"Inserted into salesreceiptlinedetail with TxnLineID={txnLineID}");
-                            }
-
-                            // Update salesreceipt Subtotal and TotalAmount
-                            AppLogger.LogInfo($"Updating salesreceipt Subtotal and TotalAmount for TxnID={txnIDForRefNumber ?? txnID}");
-
-                            string updateSalesReceiptQuery = @"
-UPDATE salesreceipt
-SET Subtotal = (SELECT IFNULL(SUM(Amount), 0) FROM salesreceiptlinedetail WHERE IDKEY = @IDKEY),
-    TotalAmount = (SELECT IFNULL(SUM(Amount), 0) FROM salesreceiptlinedetail WHERE IDKEY = @IDKEY)
-WHERE TxnID = @TxnID";
-
-                            using (var updateCommand = new MySqlCommand(updateSalesReceiptQuery, connection, transaction))
-                            {
-                                updateCommand.Parameters.AddWithValue("@IDKEY", txnIDForRefNumber ?? txnID);
-                                updateCommand.Parameters.AddWithValue("@TxnID", txnIDForRefNumber ?? txnID);
-
-                                await updateCommand.ExecuteNonQueryAsync();
-                                AppLogger.LogInfo($"Updated salesreceipt Subtotal and TotalAmount for TxnID={txnIDForRefNumber ?? txnID}");
-                            }
-                        }
-
-                        await transaction.CommitAsync(); // Commit transaction if all operations succeed
-                        success = true; // Exit retry loop if successful
-                    }
-                }
-                catch (Exception ex)
-                {
-                    string errorMessage = $"Error processing row with description '{description}': {ex.Message}";
-                    Console.WriteLine(errorMessage);
-                    AppLogger.LogError(errorMessage);
-
-                    // Rollback transaction if not already committed
-                    if (transaction != null)
-                    {
-                        try
-                        {
-                            await transaction.RollbackAsync();
-                        }
-                        catch (Exception rollbackEx)
-                        {
-                            AppLogger.LogError($"Error rolling back transaction: {rollbackEx.Message}");
-                        }
-                    }
-
-                    // Perform cleanup
-                    await CleanupFailedTransactionAsync(txnLineIDs, newtxnID);
-
-                    // Exit retry loop
-                    success = true;
-                }
-                finally
-                {
-                    semaphore.Release();
-                }
-            }
-        }
-
-        private static async Task CleanupFailedTransactionAsync(List<string> txnLineIDs, string? txnID)
-        {
-            try
-            {
-                using (var connection = new MySqlConnection(ConnectionClass.GetConnectionString()))
-                {
-                    await connection.OpenAsync();
-
-                    // Cleanup salesreceiptlinedetail
-                    foreach (var txnLineID in txnLineIDs)
-                    {
-                        string deleteLineDetailQuery = "DELETE FROM salesreceiptlinedetail WHERE TxnLineID = @TxnLineID";
-                        using (var deleteLineDetailCmd = new MySqlCommand(deleteLineDetailQuery, connection))
-                        {
-                            AppLogger.LogInfo($"Reverting Inserted in SaleRceiptLine!: {txnLineID}");
-                            deleteLineDetailCmd.Parameters.AddWithValue("@TxnLineID", txnLineID);
-                            await deleteLineDetailCmd.ExecuteNonQueryAsync();
-                        }
-                    }
-
-                    // Cleanup salesreceipt if txnID is not null
-                    if (txnID != null)
-                    {
-                        string deleteReceiptQuery = "DELETE FROM salesreceipt WHERE TxnID = @TxnID";
-                        using (var deleteReceiptCmd = new MySqlCommand(deleteReceiptQuery, connection))
-                        {
-                            AppLogger.LogInfo($"Reverting Inserted in SaleReceipt!: {txnID}");
-                            deleteReceiptCmd.Parameters.AddWithValue("@TxnID", txnID);
-                            await deleteReceiptCmd.ExecuteNonQueryAsync();
-                        }
-                    }
-
-                    AppLogger.LogInfo($"Reverted!");
-                }
-            }
-            catch (Exception ex)
-            {
-                string errorMessage = $"Error cleaning up failed transaction: {ex.Message}";
-                Console.WriteLine(errorMessage);
-                AppLogger.LogError(errorMessage);
-            }
-
-            Console.WriteLine(txnID);
-        }
-
+       
 
         private static async Task ProcessXlsxWorksheetAsync(ExcelWorksheet worksheet)
         {
@@ -337,7 +103,7 @@ WHERE TxnID = @TxnID";
             int descriptionColumnIndex = BasicUtilities.FindColumnIndex(worksheet, totalColumns, "DESCRIPTION");
             int qtyColumnIndex = BasicUtilities.FindColumnIndex(worksheet, totalColumns, "QTY");
             int totalAmountColumnIndex = BasicUtilities.FindColumnIndex(worksheet, totalColumns, "TOTAL AMOUNT");
-            int refNoColumnIndex = BasicUtilities.FindColumnIndex(worksheet, totalColumns, "REF NO.");
+            int refNoColumnIndex = BasicUtilities.FindColumnIndex(worksheet, totalColumns, "CLASS");
 
             if (descriptionColumnIndex == -1 || qtyColumnIndex == -1 || totalAmountColumnIndex == -1 || refNoColumnIndex == -1)
             {
@@ -347,22 +113,106 @@ WHERE TxnID = @TxnID";
 
             var tasks = new ConcurrentBag<Task>();
 
-            for (int row = 2; row <= totalRows; row++)
+
+            DateTime dateTime = DateTime.Now;
+            string formattedDate = dateTime.ToString("yyyyMMdd");
+
+            var maxIncNumReference = await IncrementTable_Class.FetchLastReferenceAsync();
+            int inc_num = (maxIncNumReference?.Inc_num ?? 0) + 1;
+
+            if (maxIncNumReference != null)
+            {
+                Console.WriteLine($"Max Inc_num Reference - Id: {maxIncNumReference.Id}, DateTime: {maxIncNumReference.DateTime}, Inc_num: {maxIncNumReference.Inc_num}");
+            }
+            else
+            {
+                Console.WriteLine("No records found.");
+            }
+
+            Console.WriteLine(string.Concat($"{formattedDate}-{inc_num}"));
+
+
+            var reference = new Referencetable
+            {
+                Id = 1, // Or the appropriate value, e.g., your PK logic
+                DateTime = dateTime, // Format as needed
+                Inc_num = inc_num // This should be your calculated inc_num value
+            };
+
+            bool result = await IncrementTable_Class.InsertReferenceTableAsync(reference);
+
+            if (result)
+            {
+                Console.WriteLine("Insert successful.");
+
+            }
+            else
+            {
+                Console.WriteLine("Insert failed.");
+            }
+
+            string txnIDGenerated = BasicUtilities.GenerateTxnID();
+            string class_header = "";
+            decimal totalAmount = 0;
+
+
+            for (int row = 1; row < totalRows; row++)
             {
                 var description = worksheet.Cells[row, descriptionColumnIndex]?.Text.Trim();
                 var qtyText = worksheet.Cells[row, qtyColumnIndex]?.Text.Trim();
                 var totalAmountText = worksheet.Cells[row, totalAmountColumnIndex]?.Text.Trim();
-                var refNo = worksheet.Cells[row, refNoColumnIndex]?.Text.Trim();
+                var className = worksheet.Cells[row, refNoColumnIndex]?.Text.Trim();
 
-                AppLogger.LogInfo($"Row {row}: Description: {description}, Qty: {qtyText}, Total Amount: {totalAmountText}, Ref No: {refNo}");
+                AppLogger.LogInfo($"Processing row with description: {description}");
 
-                if (!string.IsNullOrEmpty(description) && !string.IsNullOrEmpty(qtyText) && !string.IsNullOrEmpty(totalAmountText) && !string.IsNullOrEmpty(refNo))
+                if (!string.IsNullOrEmpty(description) && int.TryParse(qtyText, out int quantity) && decimal.TryParse(totalAmountText, out decimal amount))
                 {
-                    tasks.Add(ProcessRowAsync(description, qtyText, totalAmountText, refNo));
+
+                    bool itemExists = await ItemInventory_Class.DoesItemInventoryExistAsync(description);
+                    if (itemExists)
+                    {
+                        var item = await ItemInventory_Class.FetchItemInventoryAsync(description);
+
+                        var detail = new SalesReceiptLineDetail
+                        {
+                            TxnLineID = Guid.NewGuid().ToString(), // Or however you want to generate TxnLineID
+                            ItemRefListID = item.ListID, // Replace this with actual value if needed
+                            ItemRefFullName = item.FullName, // Or whatever logic you need
+                            Description = description,
+                            Quantity = quantity,
+                            Rate = amount / quantity, // Assuming you want to calculate rate as totalAmount / quantity
+                            Amount = amount,
+                            IdKey = txnIDGenerated // Set this to the relevant ID
+                        };
+
+                        totalAmount += amount;
+
+                        class_header = className;
+                        tasks.Add(SalesReceiptLineDetail_Class.InsertSalesReceiptLineDetailAsync(detail));
+
+                    }
+
                 }
             }
 
+            var res = await ClassName_Class.FetchClassAsync(class_header);
+
+            var receipt = new SalesReceipt
+            {
+                TxnID = txnIDGenerated, // Replace with your generated TxnID
+                ClassRef_ListID = res.ListId, // Replace with the actual ClassRef_ListID
+                ClassRef_FullName = res.Name, // Replace with the actual ClassRef_FullName
+                TxnDate = DateTime.Now, // Current date and time
+                RefNumber = string.Concat($"{formattedDate}-{inc_num}"), // Replace with the actual reference number
+                Subtotal = totalAmount, // Replace with the actual subtotal
+                TotalAmount = totalAmount, // Replace with the actual total amount
+                Status = "ADD" // Replace with the actual status
+            };
+
+            tasks.Add(SalesReceipt_Class.InsertSalesReceiptAsync(receipt));
+
             await Task.WhenAll(tasks);
+
         }
 
         private static async Task ProcessXlsWorksheetAsync(ISheet sheet)
@@ -383,9 +233,9 @@ WHERE TxnID = @TxnID";
             int qtyColumnIndex = BasicUtilities.FindColumnIndex(headerRow, "QTY");
             int priceColumnIndex = BasicUtilities.FindColumnIndex(headerRow, "PRICE");
             int totalAmountColumnIndex = BasicUtilities.FindColumnIndex(headerRow, "TOTAL AMOUNT");
-            int refNoColumnIndex = BasicUtilities.FindColumnIndex(headerRow, "REF NO.");
+            int classColumnIndex = BasicUtilities.FindColumnIndex(headerRow, "CLASS");
 
-            if (descriptionColumnIndex == -1 || qtyColumnIndex == -1 || priceColumnIndex == -1 || totalAmountColumnIndex == -1 || refNoColumnIndex == -1)
+            if (descriptionColumnIndex == -1 || qtyColumnIndex == -1 || priceColumnIndex == -1 || totalAmountColumnIndex == -1 || classColumnIndex == -1)
             {
                 Console.WriteLine("One or more required headers not found.");
                 return;
@@ -393,20 +243,97 @@ WHERE TxnID = @TxnID";
 
             var tasks = new ConcurrentBag<Task>();
 
+
+            DateTime dateTime = DateTime.Now;
+            string formattedDate = dateTime.ToString("yyyyMMdd");
+
+            var maxIncNumReference = await IncrementTable_Class.FetchLastReferenceAsync();
+            int inc_num = (maxIncNumReference?.Inc_num ?? 0) + 1;
+
+            if (maxIncNumReference != null)
+            {
+                Console.WriteLine($"Max Inc_num Reference - Id: {maxIncNumReference.Id}, DateTime: {maxIncNumReference.DateTime}, Inc_num: {maxIncNumReference.Inc_num}");
+            }
+            else
+            {
+                Console.WriteLine("No records found.");
+            }
+
+            Console.WriteLine(string.Concat($"{formattedDate}-{inc_num}"));
+
+
+            var reference = new Referencetable
+            {
+                Id = 1, // Or the appropriate value, e.g., your PK logic
+                DateTime = dateTime, // Format as needed
+                Inc_num = inc_num // This should be your calculated inc_num value
+            };
+
+            await IncrementTable_Class.InsertReferenceTableAsync(reference);
+
+
+            string txnIDGenerated = BasicUtilities.GenerateTxnID();
+            string class_header = "";
+            decimal totalAmount = 0;
+
+
             for (int row = 1; row < sheet.PhysicalNumberOfRows; row++)
             {
                 var description = sheet.GetRow(row)?.GetCell(descriptionColumnIndex)?.ToString().Trim();
-                var qty = sheet.GetRow(row)?.GetCell(qtyColumnIndex)?.ToString().Trim();
-                var totalAmount = sheet.GetRow(row)?.GetCell(totalAmountColumnIndex)?.ToString().Trim();
-                var refNo = sheet.GetRow(row)?.GetCell(refNoColumnIndex)?.ToString().Trim();
+                var qtyText = sheet.GetRow(row)?.GetCell(qtyColumnIndex)?.ToString().Trim();
+                var totalAmountText = sheet.GetRow(row)?.GetCell(totalAmountColumnIndex)?.ToString().Trim();
+                var className = sheet.GetRow(row)?.GetCell(classColumnIndex)?.ToString().Trim();
 
-                if (!string.IsNullOrEmpty(description))
+                AppLogger.LogInfo($"Processing row with description: {description}");
+
+                if (!string.IsNullOrEmpty(description) && int.TryParse(qtyText, out int quantity) && decimal.TryParse(totalAmountText, out decimal amount))
                 {
-                    tasks.Add(ProcessRowAsync(description, qty, totalAmount, refNo));
+
+                    bool itemExists = await ItemInventory_Class.DoesItemInventoryExistAsync(description);
+                    if (itemExists)
+                    {
+                        var item = await ItemInventory_Class.FetchItemInventoryAsync(description);
+
+                        var detail = new SalesReceiptLineDetail
+                        {
+                            TxnLineID = Guid.NewGuid().ToString(), // Or however you want to generate TxnLineID
+                            ItemRefListID = item.ListID, // Replace this with actual value if needed
+                            ItemRefFullName = item.FullName, // Or whatever logic you need
+                            Description = description,
+                            Quantity = quantity,
+                            Rate = amount / quantity, // Assuming you want to calculate rate as totalAmount / quantity
+                            Amount = amount,
+                            IdKey = txnIDGenerated // Set this to the relevant ID
+                        };
+
+                        totalAmount += amount;
+
+                        class_header = className;
+                        tasks.Add(SalesReceiptLineDetail_Class.InsertSalesReceiptLineDetailAsync(detail));
+
+                    }
+                
                 }
             }
 
+            var res = await ClassName_Class.FetchClassAsync(class_header);
+
+            var receipt = new SalesReceipt
+            {
+                TxnID = txnIDGenerated, // Replace with your generated TxnID
+                ClassRef_ListID = res.ListId, // Replace with the actual ClassRef_ListID
+                ClassRef_FullName = res.Name, // Replace with the actual ClassRef_FullName
+                TxnDate = DateTime.Now, // Current date and time
+                RefNumber = string.Concat($"{formattedDate}-{inc_num}"), // Replace with the actual reference number
+                Subtotal = totalAmount, // Replace with the actual subtotal
+                TotalAmount = totalAmount, // Replace with the actual total amount
+                Status = "ADD" // Replace with the actual status
+            };
+
+            tasks.Add(SalesReceipt_Class.InsertSalesReceiptAsync(receipt));
+
             await Task.WhenAll(tasks);
+
         }
     }
 }
