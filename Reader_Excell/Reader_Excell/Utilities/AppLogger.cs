@@ -1,5 +1,4 @@
-﻿//AppLogger.cs
-using NLog;
+﻿using NLog;
 using NLog.Config;
 using NLog.Targets;
 using System.IO;
@@ -49,33 +48,66 @@ namespace Reader_Excell.Utilities
 
         private static void WriteLogHeader()
         {
-            using (var fileStream = new FileStream(logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
-            using (var writer = new StreamWriter(fileStream))
-            {
-                writer.WriteLine(new string('-', 80));
-                writer.WriteLine($"Begin Log for {logStartTimestamp}");
-                writer.WriteLine(new string('-', 80));
-            }
+            PrependLogToFile(new string('-', 80) + "\n" +
+                             $"Begin Log for {logStartTimestamp}\n" +
+                             new string('-', 80) + "\n");
         }
 
         public static void LogInfo(string message)
         {
-            logger.Info(message);
+            PrependLogToFile($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} INFO {message}\n");
         }
 
         public static void LogError(string message)
         {
-            logger.Error(message);
+            PrependLogToFile($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} ERROR {message}\n");
         }
 
         public static void LogEnd()
         {
-            using (var fileStream = new FileStream(logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
-            using (var writer = new StreamWriter(fileStream))
+            PrependLogToFile(new string('-', 80) + "\n" +
+                             $"End Log for {DateTime.Now:yyyy-MM-dd HH:mm:ss}\n" +
+                             new string('-', 80) + "\n");
+        }
+
+        private static void PrependLogToFile(string newLogEntry)
+        {
+            lock (logFilePath) // Synchronize file access
             {
-                writer.WriteLine(new string('-', 80));
-                writer.WriteLine($"End Log for {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-                writer.WriteLine(new string('-', 80));
+                string tempFilePath = Path.Combine(logDirectory, "temp_" + logFileName);
+
+                try
+                {
+                    // Write the new log entry to the temporary file
+                    File.WriteAllText(tempFilePath, newLogEntry);
+
+                    // Append the contents of the existing log file to the temp file, if it exists
+                    if (File.Exists(logFilePath))
+                    {
+                        using (var originalStream = new FileStream(logFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                        using (var tempStream = new FileStream(tempFilePath, FileMode.Append, FileAccess.Write, FileShare.None))
+                        {
+                            originalStream.CopyTo(tempStream); // Append the original log contents to the temp file
+                        }
+                    }
+
+                    // Replace the original log file with the temp file
+                    File.Delete(logFilePath); // Delete the old log file
+                    File.Move(tempFilePath, logFilePath); // Rename temp file to log file
+                }
+                catch (IOException ex)
+                {
+                    // Handle file access issues
+                    logger.Error("Error while prepending log entry: " + ex.Message);
+                }
+                finally
+                {
+                    // Ensure temp file is cleaned up in case of failure
+                    if (File.Exists(tempFilePath))
+                    {
+                        File.Delete(tempFilePath);
+                    }
+                }
             }
         }
     }
