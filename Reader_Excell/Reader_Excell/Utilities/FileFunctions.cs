@@ -81,10 +81,7 @@ namespace Reader_Excell.Utilities
             {
                 string errorMessage = $"An error occurred while processing the file {filePath}: {ex.Message}";
                 Console.WriteLine(errorMessage);
-                AppLogger.LogError(errorMessage);  // Corrected from LogInfo to LogError
-
-                // Perform cleanup in case of failure
-                
+                AppLogger.LogError(errorMessage);  // Corrected from LogInfo to LogError                
             }
         }
 
@@ -243,24 +240,13 @@ namespace Reader_Excell.Utilities
 
             var tasks = new ConcurrentBag<Task>();
 
-
             DateTime dateTime = DateTime.Now;
             string formattedDate = dateTime.ToString("yyyyMMdd");
 
             var maxIncNumReference = await IncrementTable_Class.FetchLastReferenceAsync();
             int inc_num = (maxIncNumReference?.Inc_num ?? 0) + 1;
 
-            if (maxIncNumReference != null)
-            {
-                Console.WriteLine($"Max Inc_num Reference - Id: {maxIncNumReference.Id}, DateTime: {maxIncNumReference.DateTime}, Inc_num: {maxIncNumReference.Inc_num}");
-            }
-            else
-            {
-                Console.WriteLine("No records found.");
-            }
-
             Console.WriteLine(string.Concat($"{formattedDate}-{inc_num}"));
-
 
             var reference = new Referencetable
             {
@@ -271,69 +257,189 @@ namespace Reader_Excell.Utilities
 
             await IncrementTable_Class.InsertReferenceTableAsync(reference);
 
-
             string txnIDGenerated = BasicUtilities.GenerateTxnID();
+            string txnIDGeneratedforItem = BasicUtilities.GenerateTxnID(); // Ensure it's unique per transaction
             string class_header = "";
             decimal totalAmount = 0;
 
+            // Dictionary to store inventory adjustments by FullName and ListID
+            Dictionary<string, OOP.inventoryadjustmentlinedetail> adjustmentDetails = new Dictionary<string, OOP.inventoryadjustmentlinedetail>();
 
             for (int row = 1; row < sheet.PhysicalNumberOfRows; row++)
             {
-                var description = sheet.GetRow(row)?.GetCell(descriptionColumnIndex)?.ToString().Trim();
-                var qtyText = sheet.GetRow(row)?.GetCell(qtyColumnIndex)?.ToString().Trim();
-                var totalAmountText = sheet.GetRow(row)?.GetCell(totalAmountColumnIndex)?.ToString().Trim();
-                var className = sheet.GetRow(row)?.GetCell(classColumnIndex)?.ToString().Trim();
-
-                AppLogger.LogInfo($"Processing row with description: {description}");
-
-                if (!string.IsNullOrEmpty(description) && int.TryParse(qtyText, out int quantity) && decimal.TryParse(totalAmountText, out decimal amount))
+                var rowObj = sheet.GetRow(row);
+                if (rowObj == null)
                 {
+                    AppLogger.LogError($"Row {row} is null.");
+                    continue; // Skip this row if it's null
+                }
 
-                    bool itemExists = await ItemInventory_Class.DoesItemInventoryExistAsync(description);
-                    if (itemExists)
+                var descriptionCell = rowObj.GetCell(descriptionColumnIndex);
+                var description = descriptionCell?.ToString().Trim();
+
+                var qtyCell = rowObj.GetCell(qtyColumnIndex);
+                var qtyText = qtyCell?.ToString().Trim();
+
+                var totalAmountCell = rowObj.GetCell(totalAmountColumnIndex);
+                var totalAmountText = totalAmountCell?.ToString().Trim();
+
+                var classNameCell = rowObj.GetCell(classColumnIndex);
+                var className = classNameCell?.ToString().Trim();
+
+                AppLogger.LogInfo($"Processing row {row} with description: {description}");
+
+                if (string.IsNullOrEmpty(description) || !int.TryParse(qtyText, out int quantity) || !decimal.TryParse(totalAmountText, out decimal amount))
+                {
+                    AppLogger.LogError($"Invalid data in row {row}: Description: {description}, Qty: {qtyText}, Total Amount: {totalAmountText}");
+                    continue; // Skip to the next row
+                }
+
+                bool itemExists = await ItemInventory_Class.DoesItemInventoryExistAsync(description);
+                if (!itemExists)
+                {
+                    AppLogger.LogError($"Item does not exist in inventory for description: {description}");
+                    continue;
+                }
+
+                var item = await ItemInventory_Class.FetchItemInventoryAsync(description);
+                if (item == null)
+                {
+                    AppLogger.LogError($"Item not found in inventory for description: {description}");
+                    continue;
+                }
+
+                var detail = new SalesReceiptLineDetail
+                {
+                    TxnLineID = Guid.NewGuid().ToString(), // Generate unique TxnLineID
+                    ItemRefListID = item.ListID, // Actual value needed
+                    ItemRefFullName = item.FullName, // Full name of item
+                    Description = description,
+                    Quantity = quantity,
+                    Rate = amount / quantity, // Calculate rate as totalAmount / quantity
+                    Amount = amount,
+                    IdKey = txnIDGenerated // Set to the relevant ID
+                };
+
+                totalAmount += amount;
+                class_header = className;
+
+                // Insert SalesReceiptLineDetail and check if successful
+                bool insertResult = await SalesReceiptLineDetail_Class.InsertSalesReceiptLineDetailAsync(detail);
+
+                if (insertResult)
+                {
+                    string item_id = detail.ItemRefListID; // Parent item ID
+                    int item_qty = detail.Quantity; // Parent item quantity
+
+                    Ingredients_Class ingredientClass = new Ingredients_Class();
+                    List<ingredients_table> ingredients = ingredientClass.GetIngredientsByItemInventoryId(item_id);
+
+                    if (ingredients.Count > 0)
                     {
-                        var item = await ItemInventory_Class.FetchItemInventoryAsync(description);
-
-                        var detail = new SalesReceiptLineDetail
+                        foreach (var ingredient in ingredients)
                         {
-                            TxnLineID = Guid.NewGuid().ToString(), // Or however you want to generate TxnLineID
-                            ItemRefListID = item.ListID, // Replace this with actual value if needed
-                            ItemRefFullName = item.FullName, // Or whatever logic you need
-                            Description = description,
-                            Quantity = quantity,
-                            Rate = amount / quantity, // Assuming you want to calculate rate as totalAmount / quantity
-                            Amount = amount,
-                            IdKey = txnIDGenerated // Set this to the relevant ID
-                        };
+                            int multipliedQty = ingredient.Qty * item_qty; // Multiply ingredient qty by item qty
 
-                        totalAmount += amount;
+                            // Generate a unique key for checking duplicates using both ListID and FullName
+                            string ingredientKey = $"{ingredient.Ingredient_id}_{ingredient.FullName}";
 
-                        class_header = className;
-                        tasks.Add(SalesReceiptLineDetail_Class.InsertSalesReceiptLineDetailAsync(detail));
+                            if (adjustmentDetails.ContainsKey(ingredientKey))
+                            {
+                                // If ingredient with the same ListID or FullName already exists, aggregate its ValueDifference1
+                                adjustmentDetails[ingredientKey].ValueDifference1 += multipliedQty;
+                            }
+                            else
+                            {
+                                // Otherwise, create a new adjustment entry
+                                var adjustment = new OOP.inventoryadjustmentlinedetail
+                                {
+                                    TxTLineID1 = BasicUtilities.GenerateTxnID(), // Generate a new TxTLineID
+                                    ItemRef_ListID1 = ingredient.Ingredient_id, // Ingredient ID
+                                    ItemRef_FullName1 = ingredient.FullName, // Ingredient full name
+                                    ValueDifference1 = multipliedQty, // Multiplied quantity
+                                    IDKEY1 = txnIDGenerated // TxnID for this adjustment
+                                };
 
+                                adjustmentDetails.Add(ingredientKey, adjustment);
+                            }
+                        }
                     }
-                
+                    else
+                    {
+                        AppLogger.LogError($"No ingredients found for the given item ID: {detail.ItemRefListID}.");
+                    }
+                }
+                else
+                {
+                    AppLogger.LogError($"Failed to insert Sales Receipt Line Detail for item: {description}");
+                }
+            }
+
+            // After processing all rows, insert the aggregated inventory adjustments
+            foreach (var adjustment in adjustmentDetails.Values)
+            {
+                inventoryadjustment_class adjustmentClass = new inventoryadjustment_class();
+                bool result = await adjustmentClass.InsertInventoryAdjustmentAsync(adjustment);
+
+                if (result)
+                {
+                    AppLogger.LogInfo($"Inventory adjustment inserted successfully: {adjustment.ItemRef_FullName1}");
+                }
+                else
+                {
+                    AppLogger.LogError($"Inventory adjustment insertion failed for ingredient: {adjustment.ItemRef_FullName1}");
                 }
             }
 
             var res = await ClassName_Class.FetchClassAsync(class_header);
 
+            if (res == null)
+            {
+                AppLogger.LogError($"Class not found for class header: {class_header}");
+                return; // Stop processing if class is not found
+            }
+
             var receipt = new SalesReceipt
             {
-                TxnID = txnIDGenerated, // Replace with your generated TxnID
-                ClassRef_ListID = res.ListId, // Replace with the actual ClassRef_ListID
-                ClassRef_FullName = res.Name, // Replace with the actual ClassRef_FullName
-                TxnDate = DateTime.Now, // Current date and time
-                RefNumber = string.Concat($"{formattedDate}-{inc_num}"), // Replace with the actual reference number
-                Subtotal = totalAmount, // Replace with the actual subtotal
-                TotalAmount = totalAmount, // Replace with the actual total amount
-                Status = "ADD" // Replace with the actual status
+                TxnID = txnIDGenerated,
+                ClassRef_ListID = res.ListId,
+                ClassRef_FullName = res.Name,
+                TxnDate = DateTime.Now,
+                RefNumber = string.Concat($"{formattedDate}-{inc_num}"),
+                Subtotal = totalAmount,
+                TotalAmount = totalAmount,
+                Status = "ADD"
             };
 
-            tasks.Add(SalesReceipt_Class.InsertSalesReceiptAsync(receipt));
+            bool sealse = await SalesReceipt_Class.InsertSalesReceiptAsync(receipt);
+
+            if (sealse)
+            {
+                var adjustments = new inventoryadjustment
+                {
+                    TxnLineID1 = txnIDGeneratedforItem,
+                    TimeCreated1 = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                    ClassRef_ListID1 = res.ListId,
+                    ClassRef_FullName1 = res.Name,
+                    RefNumber1 = string.Concat($"{formattedDate}-{inc_num}")
+                };
+
+                var adjustmentClass = new inventoryadjustment_class();
+                bool resultd = await adjustmentClass.InsertInventoryAdjustmentAsync(adjustments);
+
+                if (resultd)
+                {
+                    Console.WriteLine("Inventory adjustment inserted successfully.");
+                }
+                else
+                {
+                    Console.WriteLine("Failed to insert inventory adjustment.");
+                }
+            }
 
             await Task.WhenAll(tasks);
-
         }
+
+
     }
 }

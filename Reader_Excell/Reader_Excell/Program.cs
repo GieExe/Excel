@@ -1,14 +1,17 @@
-﻿//Program.cs
-using OfficeOpenXml;
+﻿using OfficeOpenXml;
 using Reader_Excell.Utilities;
 using Reader_Excell.Properties;
-
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 
 namespace Reader_Excel
 {
     internal class Program
     {
         private static readonly CancellationTokenSource cts = new CancellationTokenSource();
+        private static readonly HttpClient httpClient = new HttpClient();
+        private static readonly string apiUrl = "https://localhost:7226/api/license/validate"; // Replace with your API URL
 
         static async Task Main(string[] args)
         {
@@ -23,7 +26,6 @@ namespace Reader_Excel
             };
 
             String userDirectoryPath = Settings.Default.Path;
-
 
             // Validate and set the directory path
             if (Directory.Exists(userDirectoryPath))
@@ -40,6 +42,26 @@ namespace Reader_Excel
                 Console.WriteLine("D:\\Data\\ExcelProcessing");
                 Console.WriteLine("Please enter the directory path to monitor for Excel files:");
                 userDirectoryPath = Console.ReadLine();
+            }
+
+            // License validation process
+            string licenseKey = GetStoredLicense();
+
+            if (string.IsNullOrEmpty(licenseKey) || !await ValidateLicense(licenseKey))
+            {
+                Console.WriteLine("Please enter your license key:");
+                licenseKey = Console.ReadLine();
+
+                if (await ValidateLicense(licenseKey))
+                {
+                    StoreLicense(licenseKey);
+                    Console.WriteLine("License is valid and saved.");
+                }
+                else
+                {
+                    Console.WriteLine("Invalid license key. Application will exit.");
+                    return;
+                }
             }
 
             while (true)
@@ -135,6 +157,40 @@ namespace Reader_Excel
                 {
                     Console.WriteLine("Invalid choice. Please select either 1 or 2.");
                 }
+            }
+        }
+
+        private static string GetStoredLicense()
+        {
+            // You can store the license key in a file or use other methods as needed
+            string licenseFilePath = "license.txt";
+            if (File.Exists(licenseFilePath))
+            {
+                return File.ReadAllText(licenseFilePath);
+            }
+            return null;
+        }
+
+        private static void StoreLicense(string licenseKey)
+        {
+            // Store the license key in a file
+            File.WriteAllText("license.txt", licenseKey);
+        }
+
+        private static async Task<bool> ValidateLicense(string licenseKey)
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(new { Key = licenseKey });
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await httpClient.PostAsync(apiUrl, content);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error validating license: {ex.Message}");
+                return false;
             }
         }
     }

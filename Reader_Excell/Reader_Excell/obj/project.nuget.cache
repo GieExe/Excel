@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "9T9f1PcKHl8=",
+  "dgSpecHash": "ten3lmqErTA=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Giebert\\Source\\Repos\\Excel\\Reader_Excell\\Reader_Excell\\Reader_Excell.csproj",
+  "projectFilePath": "C:\\Users\\Giebert\\source\\repos\\Excel\\Reader_Excell\\Reader_Excell\\Reader_Excell.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Giebert\\.nuget\\packages\\bouncycastle.cryptography\\2.3.1\\bouncycastle.cryptography.2.3.1.nupkg.sha512",
     "C:\\Users\\Giebert\\.nuget\\packages\\enums.net\\4.0.1\\enums.net.4.0.1.nupkg.sha512",
