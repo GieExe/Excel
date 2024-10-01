@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Reader_Excell
-build_property.ProjectDir = C:\Users\Giebert\source\repos\Excel\Reader_Excell\Reader_Excell\
+build_property.ProjectDir = C:\Users\Giebert\Source\Repos\Excel\Reader_Excell\Reader_Excell\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

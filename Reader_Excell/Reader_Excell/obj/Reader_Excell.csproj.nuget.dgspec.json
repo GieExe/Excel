@@ -1,15 +1,15 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Giebert\\source\\repos\\Excel\\Reader_Excell\\Reader_Excell\\Reader_Excell.csproj": {}
+    "C:\\Users\\Giebert\\Source\\Repos\\Excel\\Reader_Excell\\Reader_Excell\\Reader_Excell.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Giebert\\source\\repos\\Excel\\Reader_Excell\\Reader_Excell\\Reader_Excell.csproj": {
+    "C:\\Users\\Giebert\\Source\\Repos\\Excel\\Reader_Excell\\Reader_Excell\\Reader_Excell.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Giebert\\source\\repos\\Excel\\Reader_Excell\\Reader_Excell\\Reader_Excell.csproj",
+        "projectUniqueName": "C:\\Users\\Giebert\\Source\\Repos\\Excel\\Reader_Excell\\Reader_Excell\\Reader_Excell.csproj",
         "projectName": "Reader_Excell",
-        "projectPath": "C:\\Users\\Giebert\\source\\repos\\Excel\\Reader_Excell\\Reader_Excell\\Reader_Excell.csproj",
+        "projectPath": "C:\\Users\\Giebert\\Source\\Repos\\Excel\\Reader_Excell\\Reader_Excell\\Reader_Excell.csproj",
         "packagesPath": "C:\\Users\\Giebert\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\Giebert\\Source\\Repos\\Excel\\Reader_Excell\\Reader_Excell\\obj\\",
         "projectStyle": "PackageReference",
