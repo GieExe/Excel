@@ -1,4 +1,5 @@
-﻿using System;
+﻿//inventoryadjustment.cs
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ namespace Reader_Excell.OOP
     {
         private string TxnLineID;
         private string TimeCreated;
+        private string TxnNumber;
         private string ClassRef_ListID;
         private string ClassRef_FullName;
         private string RefNumber;
@@ -19,5 +21,6 @@ namespace Reader_Excell.OOP
         public string ClassRef_ListID1 { get => ClassRef_ListID; set => ClassRef_ListID = value; }
         public string ClassRef_FullName1 { get => ClassRef_FullName; set => ClassRef_FullName = value; }
         public string RefNumber1 { get => RefNumber; set => RefNumber = value; }
+        public string TxnNumber1 { get => TxnNumber; set => TxnNumber = value; }
     }
 }

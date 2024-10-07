@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿//Ingredients_Class.cs
+using MySql.Data.MySqlClient;
 using Reader_Excell.OOP; // Reference to the ingredients_table class
 using System;
 using System.Collections.Generic;

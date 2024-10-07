@@ -85,7 +85,7 @@ namespace Reader_Excell.Utilities
             }
         }
 
-       
+
 
         private static async Task ProcessXlsxWorksheetAsync(ExcelWorksheet worksheet)
         {
@@ -147,6 +147,8 @@ namespace Reader_Excell.Utilities
             {
                 Console.WriteLine("Insert failed.");
             }
+
+            
 
             string txnIDGenerated = BasicUtilities.GenerateTxnID();
             string class_header = "";
@@ -238,8 +240,6 @@ namespace Reader_Excell.Utilities
                 return;
             }
 
-            var tasks = new ConcurrentBag<Task>();
-
             DateTime dateTime = DateTime.Now;
             string formattedDate = dateTime.ToString("yyyyMMdd");
 
@@ -257,13 +257,19 @@ namespace Reader_Excell.Utilities
 
             await IncrementTable_Class.InsertReferenceTableAsync(reference);
 
+
+            
+
+
+
             string txnIDGenerated = BasicUtilities.GenerateTxnID();
             string txnIDGeneratedforItem = BasicUtilities.GenerateTxnID(); // Ensure it's unique per transaction
+            string txnIDGeneratedforEachItem = "";
             string class_header = "";
             decimal totalAmount = 0;
 
-            // Dictionary to store inventory adjustments by FullName and ListID
-            Dictionary<string, OOP.inventoryadjustmentlinedetail> adjustmentDetails = new Dictionary<string, OOP.inventoryadjustmentlinedetail>();
+            // List to store inventory adjustments
+            List<OOP.inventoryadjustmentlinedetail> adjustmentDetails = new List<OOP.inventoryadjustmentlinedetail>();
 
             for (int row = 1; row < sheet.PhysicalNumberOfRows; row++)
             {
@@ -330,53 +336,97 @@ namespace Reader_Excell.Utilities
                 {
                     string item_id = detail.ItemRefListID; // Parent item ID
                     int item_qty = detail.Quantity; // Parent item quantity
+                    txnIDGeneratedforEachItem = BasicUtilities.GenerateTxnID();
 
                     Ingredients_Class ingredientClass = new Ingredients_Class();
                     List<ingredients_table> ingredients = ingredientClass.GetIngredientsByItemInventoryId(item_id);
 
+                    // Process each ingredient
                     if (ingredients.Count > 0)
                     {
                         foreach (var ingredient in ingredients)
                         {
-                            int multipliedQty = ingredient.Qty * item_qty; // Multiply ingredient qty by item qty
+                            int multipliedQty = ingredient.Qty * item_qty * -1; // Multiply ingredient qty by item qty
 
-                            // Generate a unique key for checking duplicates using both ListID and FullName
-                            string ingredientKey = $"{ingredient.Ingredient_id}_{ingredient.FullName}";
-
-                            if (adjustmentDetails.ContainsKey(ingredientKey))
+                            // Create a new adjustment entry for the ingredient
+                            var adjustment = new OOP.inventoryadjustmentlinedetail
                             {
-                                // If ingredient with the same ListID or FullName already exists, aggregate its ValueDifference1
-                                adjustmentDetails[ingredientKey].ValueDifference1 += multipliedQty;
-                            }
-                            else
-                            {
-                                // Otherwise, create a new adjustment entry
-                                var adjustment = new OOP.inventoryadjustmentlinedetail
-                                {
-                                    TxTLineID1 = BasicUtilities.GenerateTxnID(), // Generate a new TxTLineID
-                                    ItemRef_ListID1 = ingredient.Ingredient_id, // Ingredient ID
-                                    ItemRef_FullName1 = ingredient.FullName, // Ingredient full name
-                                    ValueDifference1 = multipliedQty, // Multiplied quantity
-                                    IDKEY1 = txnIDGenerated // TxnID for this adjustment
-                                };
+                                TxTLineID1 = txnIDGeneratedforEachItem, // Generate a new TxTLineID
+                                ItemRef_ListID1 = ingredient.Ingredient_id, // Ingredient ID
+                                ItemRef_FullName1 = ingredient.FullName, // Ingredient full name
+                                QuantityDifference1 = multipliedQty, // Multiplied quantity
+                                IDKEY1 = txnIDGeneratedforEachItem // TxnID for this adjustment
+                            };
 
-                                adjustmentDetails.Add(ingredientKey, adjustment);
-                            }
+                            adjustmentDetails.Add(adjustment); // Add adjustment to the list
                         }
+
+                        // **New code to insert a separate adjustment for the item only if ingredients exist**
+                        var itemAdjustment = new OOP.inventoryadjustmentlinedetail
+                        {
+                            TxTLineID1 = BasicUtilities.GenerateTxnID(), // Generate a new TxTLineID for the item adjustment
+                            ItemRef_ListID1 = item_id, // Use the item ID
+                            ItemRef_FullName1 = item.FullName, // Use the full name of the item
+                            QuantityDifference1 = item_qty, // Use the item quantity
+                            IDKEY1 = txnIDGeneratedforEachItem // TxnID for this adjustment
+                        };
+
+                        adjustmentDetails.Add(itemAdjustment); // Add the item adjustment to the list
+
+                        var maxIncNumIngredientReference = await IngredientsTableRef.FetchLastReferenceIngredientsAsync();
+                        int Ingreadient_num = (maxIncNumIngredientReference?.INC_NUM ?? 0) + 1;
+
+                        if (maxIncNumIngredientReference != null)
+                        {
+                            Console.WriteLine($"Max Inc_num Reference - Id: {maxIncNumIngredientReference.ID}, DateTime: {maxIncNumIngredientReference.DATE}, Inc_num: {maxIncNumIngredientReference.INC_NUM}");
+                        }
+                        else
+                        {
+                            Console.WriteLine("No records found.");
+                        }
+
+                        Console.WriteLine(string.Concat($"{formattedDate}-{inc_num}"));
+
+
+                        var ING_reference = new ingredientsref
+                        {
+                            ID = 1, // Or the appropriate value, e.g., your PK logic
+                            DATE = dateTime, // Format as needed
+                            INC_NUM = Ingreadient_num // This should be your calculated inc_num value
+                        };
+
+                        await IngredientsTableRef.InsertIngredientRefTable(ING_reference);
+
+                        var ress = await ClassName_Class.FetchClassAsync(class_header);
+
+                        if (ress == null)
+                        {
+                            AppLogger.LogError($"Class not found for class header: {class_header}");
+                            return; // Stop processing if class is not found
+                        }
+
+                        var adjustments = new inventoryadjustment
+                        {
+                            TxnLineID1 = txnIDGeneratedforEachItem,
+                            TimeCreated1 = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                            ClassRef_ListID1 = ress.ListId,
+                            ClassRef_FullName1 = ress.Name,
+                            RefNumber1 = string.Concat($"{formattedDate}-{Ingreadient_num}")
+                        };
+
+                        var adjustmentClass = new inventoryadjustment_class();
+                        await adjustmentClass.InsertInventoryAdjustmentAsync(adjustments);
+
                     }
                     else
                     {
-                        AppLogger.LogError($"No ingredients found for the given item ID: {detail.ItemRefListID}.");
+                        AppLogger.LogError($"No ingredients found for the given item ID: {detail.ItemRefListID}. Skipping item adjustment.");
                     }
-                }
-                else
-                {
-                    AppLogger.LogError($"Failed to insert Sales Receipt Line Detail for item: {description}");
                 }
             }
 
-            // After processing all rows, insert the aggregated inventory adjustments
-            foreach (var adjustment in adjustmentDetails.Values)
+            // After processing all rows, insert the inventory adjustments
+            foreach (var adjustment in adjustmentDetails)
             {
                 inventoryadjustment_class adjustmentClass = new inventoryadjustment_class();
                 bool result = await adjustmentClass.InsertInventoryAdjustmentAsync(adjustment);
@@ -415,29 +465,8 @@ namespace Reader_Excell.Utilities
 
             if (sealse)
             {
-                var adjustments = new inventoryadjustment
-                {
-                    TxnLineID1 = txnIDGeneratedforItem,
-                    TimeCreated1 = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                    ClassRef_ListID1 = res.ListId,
-                    ClassRef_FullName1 = res.Name,
-                    RefNumber1 = string.Concat($"{formattedDate}-{inc_num}")
-                };
 
-                var adjustmentClass = new inventoryadjustment_class();
-                bool resultd = await adjustmentClass.InsertInventoryAdjustmentAsync(adjustments);
-
-                if (resultd)
-                {
-                    Console.WriteLine("Inventory adjustment inserted successfully.");
-                }
-                else
-                {
-                    Console.WriteLine("Failed to insert inventory adjustment.");
-                }
             }
-
-            await Task.WhenAll(tasks);
         }
 
 

@@ -69,3 +69,4 @@ C:\Users\Giebert\source\repos\Excel\Reader_Excell\Reader_Excell\obj\Release\net8
 C:\Users\Giebert\source\repos\Excel\Reader_Excell\Reader_Excell\obj\Release\net8.0\Reader_Excell.pdb
 C:\Users\Giebert\source\repos\Excel\Reader_Excell\Reader_Excell\obj\Release\net8.0\Reader_Excell.genruntimeconfig.cache
 C:\Users\Giebert\source\repos\Excel\Reader_Excell\Reader_Excell\obj\Release\net8.0\ref\Reader_Excell.dll
+C:\Users\Giebert\source\repos\Excel\Reader_Excell\Reader_Excell\bin\Release\net8.0\Reader_Excell.dll.config

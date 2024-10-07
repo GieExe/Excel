@@ -19,8 +19,8 @@ namespace Reader_Excell.Class
 
                     // Prepare the SQL insert command
                     string query = @"
-                        INSERT INTO inventoryadjustmentlinedetail (TxnLineID, ItemRef_ListID, ItemRef_FullName, ValueDifference, IDKEY)
-                        VALUES (@TxnLineID, @ItemRef_ListID, @ItemRef_FullName, @ValueDifference, @IDKEY)";
+                        INSERT INTO inventoryadjustmentlinedetail (TxnLineID, ItemRef_ListID, ItemRef_FullName, QuantityDifference, IDKEY)
+                        VALUES (@TxnLineID, @ItemRef_ListID, @ItemRef_FullName, @QuantityDifference, @IDKEY)";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conn))
                     {
@@ -28,7 +28,7 @@ namespace Reader_Excell.Class
                         cmd.Parameters.AddWithValue("@TxnLineID", adjustment.TxTLineID1);
                         cmd.Parameters.AddWithValue("@ItemRef_ListID", adjustment.ItemRef_ListID1);
                         cmd.Parameters.AddWithValue("@ItemRef_FullName", adjustment.ItemRef_FullName1);
-                        cmd.Parameters.AddWithValue("@ValueDifference", adjustment.ValueDifference1);
+                        cmd.Parameters.AddWithValue("@QuantityDifference", adjustment.QuantityDifference1);
                         cmd.Parameters.AddWithValue("@IDKEY", adjustment.IDKEY1);
 
                         // Execute the insert command asynchronously

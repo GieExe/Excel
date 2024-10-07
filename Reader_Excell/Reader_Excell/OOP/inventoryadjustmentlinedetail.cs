@@ -1,4 +1,5 @@
-﻿using System;
+﻿//inventoryadjustmentlinedetail.cs
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,13 +12,13 @@ namespace Reader_Excell.OOP
         private string TxTLineID;
         private string ItemRef_ListID;
         private string ItemRef_FullName;
-        private int ValueDifference;
+        private int QuantityDifference;
         private string IDKEY;
 
         public string TxTLineID1 { get => TxTLineID; set => TxTLineID = value; }
         public string ItemRef_ListID1 { get => ItemRef_ListID; set => ItemRef_ListID = value; }
         public string ItemRef_FullName1 { get => ItemRef_FullName; set => ItemRef_FullName = value; }
-        public int ValueDifference1 { get => ValueDifference; set => ValueDifference = value; }
         public string IDKEY1 { get => IDKEY; set => IDKEY = value; }
+        public int QuantityDifference1 { get => QuantityDifference; set => QuantityDifference = value; }
     }
 }
