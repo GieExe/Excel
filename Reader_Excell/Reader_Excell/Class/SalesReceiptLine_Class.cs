@@ -20,9 +20,9 @@ namespace Reader_Excel.Class
 
                     string query = @"
                                     INSERT INTO salesreceiptlinedetail 
-                                    (TxnLineID, ItemRef_ListID, ItemRef_FullName, Description, Quantity, Rate, Amount, IDKEY)
+                                    (TxnLineID, ItemRef_ListID, ItemRef_FullName, Description, Quantity, Rate, Amount, IDKEY, InventorySiteRef_ListID, InventorySiteRef_FullName)
                                     VALUES 
-                                    (@TxnLineID, @ItemRefListID, @ItemRefFullName, @Description, @Quantity, @Rate, @Amount, @IdKey)";
+                                    (@TxnLineID, @ItemRefListID, @ItemRefFullName, @Description, @Quantity, @Rate, @Amount, @IdKey, @InventorySiteRef_ListID, @InventorySiteRef_FullName)";
 
                     using (var command = new MySqlCommand(query, connection))
                     {
@@ -34,6 +34,8 @@ namespace Reader_Excel.Class
                         command.Parameters.AddWithValue("@Rate", detail.Rate);
                         command.Parameters.AddWithValue("@Amount", detail.Amount);
                         command.Parameters.AddWithValue("@IdKey", detail.IdKey);
+                        command.Parameters.AddWithValue("@InventorySiteRef_ListID", detail.InventorySiteRef_ListID);
+                        command.Parameters.AddWithValue("@InventorySiteRef_FullName", detail.InventorySiteRef_FullName);
 
                         await command.ExecuteNonQueryAsync();
                         Console.WriteLine($"Successfully Inserted : {detail.ItemRefFullName}");
@@ -48,7 +50,7 @@ namespace Reader_Excel.Class
             {
                 AppLogger.LogError($"Error Inserting : {detail.ItemRefFullName}");
                 Console.WriteLine($"Database error: {ex.Message}");
-                await DelFunc.CleanupFailedTransactionAsync(FileFunctions.txnLineIDs, FileFunctions.newtxnID, FileFunctions.re_id);
+                await DelFunc.CleanupFailedTransactionAsync(FileFunctions.txnLineIDs, FileFunctions.newtxnID, FileFunctions.refinv_, FileFunctions.InventoryAD, FileFunctions.InventoryADline, FileFunctions.refinv_id);
                 return false; // Return false if there was an error
             }
         }

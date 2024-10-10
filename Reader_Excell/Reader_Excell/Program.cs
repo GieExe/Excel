@@ -10,6 +10,7 @@ namespace Reader_Excel
     internal class Program
     {
         private static readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private static bool _isMonitoringActive = false; // Flag to check if monitoring is active
 
         static async Task Main(string[] args)
         {
@@ -154,19 +155,30 @@ namespace Reader_Excel
             }
         }
 
-        private static async Task MainLoop(string folderPath)
+        public static async Task MainLoop(string folderPath)
         {
             while (true)
             {
+                Console.WriteLine("<---------------------------------------------->");
                 Console.WriteLine("Choose an option:");
                 Console.WriteLine("1. Start processing Excel files");
                 Console.WriteLine("2. Update directory path");
+                Console.Write("Select: ");
                 string choice = Console.ReadLine();
 
                 switch (choice)
                 {
                     case "1":
-                        await StartMonitoringExcelFiles(folderPath);
+                        if (!_isMonitoringActive) // Check if monitoring is already active
+                        {
+                            _isMonitoringActive = true; // Set the flag to true
+                            await StartMonitoringExcelFiles(folderPath);
+                            _isMonitoringActive = false; // Reset the flag when monitoring stops
+                        }
+                        else
+                        {
+                            Console.WriteLine("Monitoring is already active. Please stop monitoring before starting again.");
+                        }
                         break;
                     case "2":
                         folderPath = await GetValidDirectoryPathFromUser();
@@ -188,7 +200,7 @@ namespace Reader_Excel
                 Console.WriteLine("The directory path is not set or does not exist. Please update the directory path first.");
                 return; // Exit if the directory is invalid
             }
-
+            Console.WriteLine("<---------------------------------------------->");
             Console.WriteLine($"Monitoring folder: {folderPath} for Excel files (.xlsx, .xls)...");
 
             using var watcher = new FileSystemWatcher
@@ -235,6 +247,11 @@ namespace Reader_Excel
 
                 await Task.Delay(500); // Polling delay to reduce CPU usage
             }
+
+            // Reset the flag here to ensure it reflects that monitoring is no longer active
+            _isMonitoringActive = false;
+            watcher.EnableRaisingEvents = false; // Stop the watcher from monitoring
         }
+
     }
 }

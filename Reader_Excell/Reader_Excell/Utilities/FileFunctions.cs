@@ -4,14 +4,6 @@ using NPOI.SS.UserModel;
 using OfficeOpenXml;
 using Reader_Excell.Class;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
-using System.Data;
 using Reader_Excel.Class;
 using Reader_Excell.OOP;
 using Reader_Excel.OOP; // Ensure this namespace is included
@@ -27,7 +19,10 @@ namespace Reader_Excell.Utilities
         public static List<string> txnLineIDs = new List<string>();
         public static string? txnID = null;
         public static string? newtxnID = null;
-        public static int re_id;
+        public static List<string> InventoryAD = new List<string>();
+        public static List<string> InventoryADline = new List<string>();
+        public static int? refinv_id;
+        public static int? refinv_;
 
         public static async Task ProcessExcelFileAsync(string filePath, string logDirectoryPath, CancellationToken cancellationToken)
         {
@@ -44,6 +39,8 @@ namespace Reader_Excell.Utilities
                 // Clear previous global data
                 txnID = null;
                 newtxnID = null;
+                InventoryAD.Clear();
+                InventoryADline.Clear();
                 txnLineIDs.Clear();
 
                 string extension = Path.GetExtension(filePath).ToLower();
@@ -233,8 +230,9 @@ namespace Reader_Excell.Utilities
             int priceColumnIndex = BasicUtilities.FindColumnIndex(headerRow, "PRICE");
             int totalAmountColumnIndex = BasicUtilities.FindColumnIndex(headerRow, "TOTAL AMOUNT");
             int classColumnIndex = BasicUtilities.FindColumnIndex(headerRow, "CLASS");
+            int inventorysiteColumnIndex = BasicUtilities.FindColumnIndex(headerRow, "INVENTORY SITE");
 
-            if (descriptionColumnIndex == -1 || qtyColumnIndex == -1 || priceColumnIndex == -1 || totalAmountColumnIndex == -1 || classColumnIndex == -1)
+            if (descriptionColumnIndex == -1 || qtyColumnIndex == -1 || priceColumnIndex == -1 || totalAmountColumnIndex == -1 || classColumnIndex == -1 || inventorysiteColumnIndex == -1)
             {
                 Console.WriteLine("One or more required headers not found.");
                 return;
@@ -256,10 +254,6 @@ namespace Reader_Excell.Utilities
             };
 
             await IncrementTable_Class.InsertReferenceTableAsync(reference);
-
-
-            
-
 
 
             string txnIDGenerated = BasicUtilities.GenerateTxnID();
@@ -292,6 +286,9 @@ namespace Reader_Excell.Utilities
                 var classNameCell = rowObj.GetCell(classColumnIndex);
                 var className = classNameCell?.ToString().Trim();
 
+                var inventorysitecell = rowObj.GetCell(inventorysiteColumnIndex);
+                var inventorysiteText = inventorysitecell?.ToString().Trim();
+
                 AppLogger.LogInfo($"Processing row {row} with description: {description}");
 
                 if (string.IsNullOrEmpty(description) || !int.TryParse(qtyText, out int quantity) || !decimal.TryParse(totalAmountText, out decimal amount))
@@ -313,6 +310,27 @@ namespace Reader_Excell.Utilities
                     AppLogger.LogError($"Item not found in inventory for description: {description}");
                     continue;
                 }
+                // Fetch the ListID and Name based on the Inventory Site
+                string listID12 = null;
+                string inventorySiteFullName12 = null;
+
+                if (!string.IsNullOrEmpty(inventorysiteText))
+                {
+                    var inventorySiteClass = new inventorysite_class(); // Create an instance
+                    var inventorySite = await inventorySiteClass.GetInventorySiteByNameAsync(inventorysiteText); // Call the method
+
+                    if (inventorySite.Count > 0)
+                    {
+                        listID12 = inventorySite.FirstOrDefault().ListID1; // Get the first match
+                        inventorySiteFullName12 = inventorySite.FirstOrDefault().Name1;
+                    }
+                    else
+                    {
+                        AppLogger.LogError($"Inventory Site not found for: {inventorysiteText}");
+                        continue;
+                    }
+                }
+
 
                 var detail = new SalesReceiptLineDetail
                 {
@@ -323,7 +341,9 @@ namespace Reader_Excell.Utilities
                     Quantity = quantity,
                     Rate = amount / quantity, // Calculate rate as totalAmount / quantity
                     Amount = amount,
-                    IdKey = txnIDGenerated // Set to the relevant ID
+                    IdKey = txnIDGenerated, // Set to the relevant ID
+                    InventorySiteRef_ListID = listID12, // Include ListID from inventory site
+                    InventorySiteRef_FullName = inventorySiteFullName12 // Include Inventory Site full name
                 };
 
                 totalAmount += amount;
@@ -334,16 +354,18 @@ namespace Reader_Excell.Utilities
 
                 if (insertResult)
                 {
+                    
                     string item_id = detail.ItemRefListID; // Parent item ID
                     int item_qty = detail.Quantity; // Parent item quantity
                     txnIDGeneratedforEachItem = BasicUtilities.GenerateTxnID();
-
+                    Console.WriteLine($"detail: {detail.ItemRefListID}");
                     Ingredients_Class ingredientClass = new Ingredients_Class();
                     List<ingredients_table> ingredients = ingredientClass.GetIngredientsByItemInventoryId(item_id);
 
                     // Process each ingredient
                     if (ingredients.Count > 0)
                     {
+
                         foreach (var ingredient in ingredients)
                         {
                             int multipliedQty = ingredient.Qty * item_qty * -1; // Multiply ingredient qty by item qty
@@ -369,6 +391,7 @@ namespace Reader_Excell.Utilities
                             ItemRef_FullName1 = item.FullName, // Use the full name of the item
                             QuantityDifference1 = item_qty, // Use the item quantity
                             IDKEY1 = txnIDGeneratedforEachItem // TxnID for this adjustment
+
                         };
 
                         adjustmentDetails.Add(itemAdjustment); // Add the item adjustment to the list
@@ -423,6 +446,7 @@ namespace Reader_Excell.Utilities
                         AppLogger.LogError($"No ingredients found for the given item ID: {detail.ItemRefListID}. Skipping item adjustment.");
                     }
                 }
+               
             }
 
             // After processing all rows, insert the inventory adjustments
@@ -434,10 +458,12 @@ namespace Reader_Excell.Utilities
                 if (result)
                 {
                     AppLogger.LogInfo($"Inventory adjustment inserted successfully: {adjustment.ItemRef_FullName1}");
+                    Console.WriteLine($"Inventory adjustment inserted successfully: {adjustment.ItemRef_FullName1}");
                 }
                 else
                 {
                     AppLogger.LogError($"Inventory adjustment insertion failed for ingredient: {adjustment.ItemRef_FullName1}");
+                    Console.WriteLine($"Inventory adjustment insertion failed for ingredient: {adjustment.ItemRef_FullName1}");
                 }
             }
 

@@ -1,6 +1,8 @@
 ﻿using MySql.Data.MySqlClient;
 using Reader_Excell.OOP;
+using Reader_Excell.Utilities;
 using System;
+
 
 
 namespace Reader_Excell.Class
@@ -33,16 +35,22 @@ namespace Reader_Excell.Class
 
                         // Execute the insert command asynchronously
                         int rowsAffected = await cmd.ExecuteNonQueryAsync(); // Use asynchronous execute
-
+                        FileFunctions.InventoryADline.Add(adjustment.TxTLineID1);
                         // Return true if the insert was successful
                         return rowsAffected > 0;
+
+
                     }
+                    
                 }
+
+
             }
             catch (Exception ex)
             {
                 // Log the exception (you can implement logging here)
                 Console.WriteLine($"Error inserting inventory adjustment: {ex.Message}");
+                await DelFunc.CleanupFailedTransactionAsync(FileFunctions.txnLineIDs, FileFunctions.newtxnID, FileFunctions.refinv_, FileFunctions.InventoryAD, FileFunctions.InventoryADline, FileFunctions.refinv_id);
                 return false;
             }
         }
@@ -68,6 +76,7 @@ namespace Reader_Excell.Class
                         cmd.Parameters.AddWithValue("@RefNumber", linedetails.RefNumber1);
 
                         int rowsAffected = await cmd.ExecuteNonQueryAsync();
+                        FileFunctions.InventoryAD.Add(linedetails.TxnLineID1);
                         return rowsAffected > 0;
                     }
                 }
@@ -75,6 +84,13 @@ namespace Reader_Excell.Class
             catch (Exception ex)
             {
                 // Implement logging instead of Console.WriteLine
+                await DelFunc.CleanupFailedTransactionAsync(FileFunctions.txnLineIDs,
+                                            FileFunctions.newtxnID,
+                                            FileFunctions.refinv_,
+                                            FileFunctions.InventoryAD,
+                                            FileFunctions.InventoryADline,
+                                            FileFunctions.refinv_id);
+
                 Console.WriteLine($"Error inserting inventory adjustment: {ex.Message}");
                 return false;
             }

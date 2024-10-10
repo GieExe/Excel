@@ -32,13 +32,14 @@ namespace Reader_Excel.Class
                         await command.ExecuteNonQueryAsync();
                         Console.WriteLine($"Successfully Inserted In ref_Table: {reference.DateTime}");
                         AppLogger.LogInfo($"Successfully Inserted In ref_Table: {reference.DateTime}");
-                        FileFunctions.re_id = reference.Inc_num;
+                        FileFunctions.refinv_ = reference.Inc_num;
                         return true; // Return true if the insert was successful
                     }
                 }
             }
             catch (Exception ex)
             {
+                await DelFunc.CleanupFailedTransactionAsync(FileFunctions.txnLineIDs, FileFunctions.newtxnID, FileFunctions.refinv_, FileFunctions.InventoryAD, FileFunctions.InventoryADline, FileFunctions.refinv_id);
                 Console.WriteLine($"Database error: {ex.Message}");
                 return false; // Return false if there was an error
             }
