@@ -39,7 +39,7 @@ namespace Reader_Excell.Class
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Database error: {ex.Message}");
+                Console.WriteLine($"Database error FetchClassAsync: {ex.Message}");
             }
 
             return classItem; // Return the ClassName object or null if not found

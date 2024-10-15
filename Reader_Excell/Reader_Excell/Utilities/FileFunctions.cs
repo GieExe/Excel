@@ -21,7 +21,7 @@ namespace Reader_Excell.Utilities
         public static string? newtxnID = null;
         public static List<string> InventoryAD = new List<string>();
         public static List<string> InventoryADline = new List<string>();
-        public static int? refinv_id;
+        public static List<int> refinv_id = new List<int>();
         public static int? refinv_;
 
         public static async Task ProcessExcelFileAsync(string filePath, string logDirectoryPath, CancellationToken cancellationToken)
@@ -214,6 +214,8 @@ namespace Reader_Excell.Utilities
         private static async Task ProcessXlsWorksheetAsync(ISheet sheet)
         {
             txnID = null;
+            int ggg = 0;
+            int hhh = 0;
             txnLineIDs.Clear(); // Clear previous IDs
 
             if (sheet.PhysicalNumberOfRows == 0) return;
@@ -267,6 +269,7 @@ namespace Reader_Excell.Utilities
 
             for (int row = 1; row < sheet.PhysicalNumberOfRows; row++)
             {
+                hhh += 1;
                 var rowObj = sheet.GetRow(row);
                 if (rowObj == null)
                 {
@@ -324,11 +327,6 @@ namespace Reader_Excell.Utilities
                         listID12 = inventorySite.FirstOrDefault().ListID1; // Get the first match
                         inventorySiteFullName12 = inventorySite.FirstOrDefault().Name1;
                     }
-                    else
-                    {
-                        AppLogger.LogError($"Inventory Site not found for: {inventorysiteText}");
-                        continue;
-                    }
                 }
 
 
@@ -343,7 +341,8 @@ namespace Reader_Excell.Utilities
                     Amount = amount,
                     IdKey = txnIDGenerated, // Set to the relevant ID
                     InventorySiteRef_ListID = listID12, // Include ListID from inventory site
-                    InventorySiteRef_FullName = inventorySiteFullName12 // Include Inventory Site full name
+                    InventorySiteRef_FullName = inventorySiteFullName12, // Include Inventory Site full name
+                    SeqNum = hhh
                 };
 
                 totalAmount += amount;
@@ -368,8 +367,8 @@ namespace Reader_Excell.Utilities
 
                         foreach (var ingredient in ingredients)
                         {
-                            int multipliedQty = ingredient.Qty * item_qty * -1; // Multiply ingredient qty by item qty
-
+                            decimal multipliedQty = ingredient.Qty * item_qty * -1; // Multiply ingredient qty by item qty
+                            ggg += 1;
                             // Create a new adjustment entry for the ingredient
                             var adjustment = new OOP.inventoryadjustmentlinedetail
                             {
@@ -377,20 +376,24 @@ namespace Reader_Excell.Utilities
                                 ItemRef_ListID1 = ingredient.Ingredient_id, // Ingredient ID
                                 ItemRef_FullName1 = ingredient.FullName, // Ingredient full name
                                 QuantityDifference1 = multipliedQty, // Multiplied quantity
-                                IDKEY1 = txnIDGeneratedforEachItem // TxnID for this adjustment
+                                IDKEY1 = txnIDGeneratedforEachItem, // TxnID for this adjustment
+                                SeqNum1 = ggg
                             };
 
                             adjustmentDetails.Add(adjustment); // Add adjustment to the list
                         }
 
                         // **New code to insert a separate adjustment for the item only if ingredients exist**
+                        ggg += 1;
                         var itemAdjustment = new OOP.inventoryadjustmentlinedetail
                         {
+                            
                             TxTLineID1 = BasicUtilities.GenerateTxnID(), // Generate a new TxTLineID for the item adjustment
                             ItemRef_ListID1 = item_id, // Use the item ID
                             ItemRef_FullName1 = item.FullName, // Use the full name of the item
                             QuantityDifference1 = item_qty, // Use the item quantity
-                            IDKEY1 = txnIDGeneratedforEachItem // TxnID for this adjustment
+                            IDKEY1 = txnIDGeneratedforEachItem, // TxnID for this adjustment
+                            SeqNum1 = ggg
 
                         };
 

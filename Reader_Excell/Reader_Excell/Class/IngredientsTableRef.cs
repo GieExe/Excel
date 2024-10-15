@@ -33,14 +33,14 @@ namespace Reader_Excell.Class
                         await command.ExecuteNonQueryAsync();
                         Console.WriteLine($"Successfully Inserted In ref_Table: {reference.DATE}");
                         AppLogger.LogInfo($"Successfully Inserted In ref_Table: {reference.DATE}");
-                        FileFunctions.refinv_id = reference.INC_NUM;
+                        FileFunctions.refinv_id.Add(reference.INC_NUM);
                         return true; // Return true if the insert was successful
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Database error: {ex.Message}");
+                Console.WriteLine($"Database error InsertIngredientRefTable: {ex.Message}");
                 await DelFunc.CleanupFailedTransactionAsync(FileFunctions.txnLineIDs, FileFunctions.newtxnID, FileFunctions.refinv_, FileFunctions.InventoryAD, FileFunctions.InventoryADline, FileFunctions.refinv_id);
                 return false; // Return false if there was an error
             }
@@ -81,7 +81,7 @@ namespace Reader_Excell.Class
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Database error: {ex.Message}");
+                Console.WriteLine($"Database error FetchLastReferenceIngredientsAsync: {ex.Message}");
             }
 
             return lastReference; // Return the last reference or null if not found

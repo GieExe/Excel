@@ -6,7 +6,7 @@ namespace Reader_Excell.Class
         public static string GetConnectionString()
         {
             // Replace the following with your actual connection string
-            return "Server=localhost;Database=milestone;User Id=root;Password=Agentfive5!;Port=3306;Pooling=true;Max Pool Size=100";
+            return "Server=localhost;Database=milestonedb;User Id=root;Password=Agentfive5!;Port=3306;Pooling=true;Max Pool Size=100";
         }
     }
 }

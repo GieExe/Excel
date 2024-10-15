@@ -19,7 +19,7 @@ namespace Reader_Excell.Utilities
             int? ref_id,
             List<string> inventoryadjustment,
             List<string> inventoryadjustmenlinedetail,
-            int? refinv_id)
+            List<int> refinv_id)
         {
             try
             {
@@ -138,14 +138,17 @@ namespace Reader_Excell.Utilities
                     }
 
                     // Check if refinv_id has a value before running the query
-                    if (refinv_id.HasValue)
+                    if (refinv_id != null && refinv_id.Any())
                     {
-                        string deletereftableQuery = "DELETE FROM ingredientsref WHERE INC_NUM = @INC_NUM";
-                        using (var deleteReceiptCmd = new MySqlCommand(deletereftableQuery, connection))
+                        foreach (var invadde in refinv_id)
                         {
-                            AppLogger.LogInfo($"Reverting Inserted in ingredientsref!: {refinv_id}");
-                            deleteReceiptCmd.Parameters.AddWithValue("@INC_NUM", refinv_id.Value);
-                            await deleteReceiptCmd.ExecuteNonQueryAsync();
+                            string DeleteinventoryADS = "DELETE FROM ingredientsref WHERE INC_NUM = @INC_NUM";
+                            using (var DeleteinventoryADcmdS = new MySqlCommand(DeleteinventoryADS, connection))
+                            {
+                                AppLogger.LogInfo($"Reverting Inserted in INC_NUM!: {invadde}");
+                                DeleteinventoryADcmdS.Parameters.AddWithValue("@INC_NUM", invadde);
+                                await DeleteinventoryADcmdS.ExecuteNonQueryAsync();
+                            }
                         }
                     }
                 }

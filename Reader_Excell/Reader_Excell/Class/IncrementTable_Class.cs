@@ -40,7 +40,7 @@ namespace Reader_Excel.Class
             catch (Exception ex)
             {
                 await DelFunc.CleanupFailedTransactionAsync(FileFunctions.txnLineIDs, FileFunctions.newtxnID, FileFunctions.refinv_, FileFunctions.InventoryAD, FileFunctions.InventoryADline, FileFunctions.refinv_id);
-                Console.WriteLine($"Database error: {ex.Message}");
+                Console.WriteLine($"Database error InsertReferenceTableAsync: {ex.Message}");
                 return false; // Return false if there was an error
             }
         }
@@ -80,7 +80,7 @@ namespace Reader_Excel.Class
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Database error: {ex.Message}");
+                Console.WriteLine($"Database error FetchLastReferenceAsync: {ex.Message}");
             }
 
             return lastReference; // Return the last reference or null if not found

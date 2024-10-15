@@ -1,4 +1,5 @@
 ﻿// SalesReceiptLineDetail_Class.cs
+using Google.Protobuf.WellKnownTypes;
 using MySql.Data.MySqlClient;
 using Reader_Excel.OOP;
 using Reader_Excell.Class;
@@ -20,9 +21,9 @@ namespace Reader_Excel.Class
 
                     string query = @"
                                     INSERT INTO salesreceiptlinedetail 
-                                    (TxnLineID, ItemRef_ListID, ItemRef_FullName, Description, Quantity, Rate, Amount, IDKEY, InventorySiteRef_ListID, InventorySiteRef_FullName)
+                                    (TxnLineID, ItemRef_ListID, ItemRef_FullName, Description, Quantity, Rate, Amount, IDKEY, InventorySiteRef_ListID, InventorySiteRef_FullName, SeqNum)
                                     VALUES 
-                                    (@TxnLineID, @ItemRefListID, @ItemRefFullName, @Description, @Quantity, @Rate, @Amount, @IdKey, @InventorySiteRef_ListID, @InventorySiteRef_FullName)";
+                                    (@TxnLineID, @ItemRefListID, @ItemRefFullName, @Description, @Quantity, @Rate, @Amount, @IdKey, @InventorySiteRef_ListID, @InventorySiteRef_FullName, @SeqNum)";
 
                     using (var command = new MySqlCommand(query, connection))
                     {
@@ -36,6 +37,7 @@ namespace Reader_Excel.Class
                         command.Parameters.AddWithValue("@IdKey", detail.IdKey);
                         command.Parameters.AddWithValue("@InventorySiteRef_ListID", detail.InventorySiteRef_ListID);
                         command.Parameters.AddWithValue("@InventorySiteRef_FullName", detail.InventorySiteRef_FullName);
+                        command.Parameters.AddWithValue("@SeqNum", detail.SeqNum);
 
                         await command.ExecuteNonQueryAsync();
                         Console.WriteLine($"Successfully Inserted : {detail.ItemRefFullName}");

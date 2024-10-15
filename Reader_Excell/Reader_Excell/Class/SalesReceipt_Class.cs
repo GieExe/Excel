@@ -44,8 +44,8 @@ namespace Reader_Excel.Class
             }
             catch (Exception ex)
             {
-                AppLogger.LogError($"Error Inserting : {receipt.TxnID}");
-                Console.WriteLine($"Database error: {ex.Message}");
+                AppLogger.LogError($"Error Inserting SalesReceipt: {receipt.TxnID}");
+                Console.WriteLine($"Database error SalesReceipt: {ex.Message}");
                 await DelFunc.CleanupFailedTransactionAsync(FileFunctions.txnLineIDs, FileFunctions.newtxnID, FileFunctions.refinv_, FileFunctions.InventoryAD, FileFunctions.InventoryADline, FileFunctions.refinv_id);
                 return false; // Return false if there was an error
             }

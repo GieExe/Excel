@@ -42,7 +42,7 @@ namespace Reader_Excell.Class
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Database error: {ex.Message}");
+                Console.WriteLine($"Database error FetchItemInventoryAsync: {ex.Message}");
             }
 
             return item; // Return the ItemInventory object or null if not found
@@ -69,7 +69,7 @@ namespace Reader_Excell.Class
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Database error: {ex.Message}");
+                Console.WriteLine($"Database error DoesItemInventoryExistAsync: {ex.Message}");
                 return false; // Return false if there was an error
             }
         }

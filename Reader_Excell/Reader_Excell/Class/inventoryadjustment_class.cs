@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Google.Protobuf.WellKnownTypes;
+using MySql.Data.MySqlClient;
 using Reader_Excell.OOP;
 using Reader_Excell.Utilities;
 using System;
@@ -21,8 +22,8 @@ namespace Reader_Excell.Class
 
                     // Prepare the SQL insert command
                     string query = @"
-                        INSERT INTO inventoryadjustmentlinedetail (TxnLineID, ItemRef_ListID, ItemRef_FullName, QuantityDifference, IDKEY)
-                        VALUES (@TxnLineID, @ItemRef_ListID, @ItemRef_FullName, @QuantityDifference, @IDKEY)";
+                        INSERT INTO inventoryadjustmentlinedetail (TxnLineID, ItemRef_ListID, ItemRef_FullName, QuantityDifference, IDKEY, SeqNum)
+                        VALUES (@TxnLineID, @ItemRef_ListID, @ItemRef_FullName, @QuantityDifference, @IDKEY, @SeqNum)";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conn))
                     {
@@ -32,6 +33,7 @@ namespace Reader_Excell.Class
                         cmd.Parameters.AddWithValue("@ItemRef_FullName", adjustment.ItemRef_FullName1);
                         cmd.Parameters.AddWithValue("@QuantityDifference", adjustment.QuantityDifference1);
                         cmd.Parameters.AddWithValue("@IDKEY", adjustment.IDKEY1);
+                        cmd.Parameters.AddWithValue("@SeqNum", adjustment.SeqNum1);
 
                         // Execute the insert command asynchronously
                         int rowsAffected = await cmd.ExecuteNonQueryAsync(); // Use asynchronous execute
@@ -64,7 +66,7 @@ namespace Reader_Excell.Class
                     await conn.OpenAsync();
 
                     string query = @"
-                        INSERT INTO inventoryadjustment (TxnID, TimeCreated, ClassRef_ListID, ClassRef_FullName, RefNumber)
+                        INSERT INTO inventoryadjustment (TxnID, TimeCreated, ClassRef_ListID, ClassRef_FullName, RefNumber )
                         VALUES (@TxnID, @TimeCreated, @ClassRef_ListID, @ClassRef_FullName, @RefNumber)";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conn))
@@ -75,6 +77,7 @@ namespace Reader_Excell.Class
                         cmd.Parameters.AddWithValue("@ClassRef_FullName", linedetails.ClassRef_FullName1);
                         cmd.Parameters.AddWithValue("@RefNumber", linedetails.RefNumber1);
 
+
                         int rowsAffected = await cmd.ExecuteNonQueryAsync();
                         FileFunctions.InventoryAD.Add(linedetails.TxnLineID1);
                         return rowsAffected > 0;
@@ -83,6 +86,7 @@ namespace Reader_Excell.Class
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Error inserting inventory adjustment: {ex.Message}");
                 // Implement logging instead of Console.WriteLine
                 await DelFunc.CleanupFailedTransactionAsync(FileFunctions.txnLineIDs,
                                             FileFunctions.newtxnID,
@@ -91,7 +95,7 @@ namespace Reader_Excell.Class
                                             FileFunctions.InventoryADline,
                                             FileFunctions.refinv_id);
 
-                Console.WriteLine($"Error inserting inventory adjustment: {ex.Message}");
+                
                 return false;
             }
         }
